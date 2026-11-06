@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 900" width="1120" height="900" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">
+<title>Field box wiring</title>
+<rect width="1120" height="900" fill="#ffffff"/>
+<text x="560.0" y="40" font-size="22" fill="#1d2329" text-anchor="middle" font-weight="bold">Field box wiring</text>
+<text x="560.0" y="64" font-size="13" fill="#5b6670" text-anchor="middle" font-weight="normal">ESP32 + ELEGOO 8-channel 5 V relay module · pins from firmware/firework_field/firework_field.ino</text>
+<rect x="40" y="110" width="170" height="504" rx="6" fill="#e8eef6" stroke="#1d2329" stroke-width="1.5"/>
+<text x="125.0" y="134" font-size="18" fill="#1d2329" text-anchor="middle" font-weight="bold">ESP32</text>
+<rect x="330" y="110" width="190" height="504" rx="6" fill="#f3f5f7" stroke="#1d2329" stroke-width="1.5"/>
+<text x="425.0" y="128" font-size="14" fill="#1d2329" text-anchor="middle" font-weight="bold">8-ch relay module</text>
+<text x="425.0" y="142" font-size="11" fill="#5b6670" text-anchor="middle" font-weight="normal">inputs are active LOW</text>
+<text x="560" y="100" font-size="12" fill="#d42a2a" text-anchor="middle" font-weight="bold">COM</text>
+<text x="604" y="100" font-size="12" fill="#1d2329" text-anchor="middle" font-weight="bold">NO</text>
+<text x="690" y="100" font-size="12" fill="#1d2329" text-anchor="middle" font-weight="normal">clip A</text>
+<text x="780.0" y="100" font-size="12" fill="#1d2329" text-anchor="middle" font-weight="normal">firework / igniter</text>
+<text x="960" y="100" font-size="12" fill="#1d2329" text-anchor="middle" font-weight="bold">NEG bus (Wago)</text>
+<line x1="210" y1="150" x2="330" y2="150" stroke="#2563eb" stroke-width="2"/>
+<text x="202" y="154" font-size="12" fill="#2563eb" text-anchor="end" font-weight="bold">GPIO 26</text>
+<text x="340" y="154" font-size="12" fill="#1d2329" text-anchor="start" font-weight="bold">IN1</text>
+<text x="510" y="154" font-size="12" fill="#5b6670" text-anchor="end" font-weight="normal">relay 1</text>
+<line x1="520" y1="142" x2="560" y2="142" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="560" cy="142" r="4" fill="#d42a2a"/>
+<line x1="520" y1="156" x2="685" y2="156" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="690" cy="156" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="695" y1="156" x2="720" y2="156" stroke="#d42a2a" stroke-width="2"/>
+<rect x="720" y="145" width="120" height="22" rx="4" fill="#fff4e0" stroke="#d97706" stroke-width="1.5"/>
+<text x="780.0" y="160" font-size="12" fill="#1d2329" text-anchor="middle" font-weight="normal">ch 1</text>
+<line x1="840" y1="156" x2="930" y2="156" stroke="#1d2329" stroke-width="2"/>
+<circle cx="930" cy="156" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="935" y1="156" x2="960" y2="156" stroke="#1d2329" stroke-width="2"/>
+<text x="606" y="181" font-size="11" fill="#d97706" text-anchor="start" font-weight="normal">sense: NO → 10k → GPIO 36 (+100k pull-up to 3V3)</text>
+<line x1="210" y1="208" x2="330" y2="208" stroke="#2563eb" stroke-width="2"/>
+<text x="202" y="212" font-size="12" fill="#2563eb" text-anchor="end" font-weight="bold">GPIO 27</text>
+<text x="340" y="212" font-size="12" fill="#1d2329" text-anchor="start" font-weight="bold">IN2</text>
+<text x="510" y="212" font-size="12" fill="#5b6670" text-anchor="end" font-weight="normal">relay 2</text>
+<line x1="520" y1="200" x2="560" y2="200" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="560" cy="200" r="4" fill="#d42a2a"/>
+<line x1="520" y1="214" x2="685" y2="214" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="690" cy="214" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="695" y1="214" x2="720" y2="214" stroke="#d42a2a" stroke-width="2"/>
+<rect x="720" y="203" width="120" height="22" rx="4" fill="#fff4e0" stroke="#d97706" stroke-width="1.5"/>
+<text x="780.0" y="218" font-size="12" fill="#1d2329" text-anchor="middle" font-weight="normal">ch 2</text>
+<line x1="840" y1="214" x2="930" y2="214" stroke="#1d2329" stroke-width="2"/>
+<circle cx="930" cy="214" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="935" y1="214" x2="960" y2="214" stroke="#1d2329" stroke-width="2"/>
+<text x="606" y="239" font-size="11" fill="#d97706" text-anchor="start" font-weight="normal">sense: NO → 10k → GPIO 39 (+100k pull-up to 3V3)</text>
+<line x1="210" y1="266" x2="330" y2="266" stroke="#2563eb" stroke-width="2"/>
+<text x="202" y="270" font-size="12" fill="#2563eb" text-anchor="end" font-weight="bold">GPIO 14</text>
+<text x="340" y="270" font-size="12" fill="#1d2329" text-anchor="start" font-weight="bold">IN3</text>
+<text x="510" y="270" font-size="12" fill="#5b6670" text-anchor="end" font-weight="normal">relay 3</text>
+<line x1="520" y1="258" x2="560" y2="258" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="560" cy="258" r="4" fill="#d42a2a"/>
+<line x1="520" y1="272" x2="685" y2="272" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="690" cy="272" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="695" y1="272" x2="720" y2="272" stroke="#d42a2a" stroke-width="2"/>
+<rect x="720" y="261" width="120" height="22" rx="4" fill="#fff4e0" stroke="#d97706" stroke-width="1.5"/>
+<text x="780.0" y="276" font-size="12" fill="#1d2329" text-anchor="middle" font-weight="normal">ch 3</text>
+<line x1="840" y1="272" x2="930" y2="272" stroke="#1d2329" stroke-width="2"/>
+<circle cx="930" cy="272" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="935" y1="272" x2="960" y2="272" stroke="#1d2329" stroke-width="2"/>
+<text x="606" y="297" font-size="11" fill="#d97706" text-anchor="start" font-weight="normal">sense: NO → 10k → GPIO 34 (+100k pull-up to 3V3)</text>
+<line x1="210" y1="324" x2="330" y2="324" stroke="#2563eb" stroke-width="2"/>
+<text x="202" y="328" font-size="12" fill="#2563eb" text-anchor="end" font-weight="bold">GPIO 13</text>
+<text x="340" y="328" font-size="12" fill="#1d2329" text-anchor="start" font-weight="bold">IN4</text>
+<text x="510" y="328" font-size="12" fill="#5b6670" text-anchor="end" font-weight="normal">relay 4</text>
+<line x1="520" y1="316" x2="560" y2="316" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="560" cy="316" r="4" fill="#d42a2a"/>
+<line x1="520" y1="330" x2="685" y2="330" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="690" cy="330" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="695" y1="330" x2="720" y2="330" stroke="#d42a2a" stroke-width="2"/>
+<rect x="720" y="319" width="120" height="22" rx="4" fill="#fff4e0" stroke="#d97706" stroke-width="1.5"/>
+<text x="780.0" y="334" font-size="12" fill="#1d2329" text-anchor="middle" font-weight="normal">ch 4</text>
+<line x1="840" y1="330" x2="930" y2="330" stroke="#1d2329" stroke-width="2"/>
+<circle cx="930" cy="330" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="935" y1="330" x2="960" y2="330" stroke="#1d2329" stroke-width="2"/>
+<text x="606" y="355" font-size="11" fill="#d97706" text-anchor="start" font-weight="normal">sense: NO → 10k → GPIO 35 (+100k pull-up to 3V3)</text>
+<line x1="210" y1="382" x2="330" y2="382" stroke="#2563eb" stroke-width="2"/>
+<text x="202" y="386" font-size="12" fill="#2563eb" text-anchor="end" font-weight="bold">GPIO 25</text>
+<text x="340" y="386" font-size="12" fill="#1d2329" text-anchor="start" font-weight="bold">IN5</text>
+<text x="510" y="386" font-size="12" fill="#5b6670" text-anchor="end" font-weight="normal">relay 5</text>
+<line x1="520" y1="374" x2="560" y2="374" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="560" cy="374" r="4" fill="#d42a2a"/>
+<line x1="520" y1="388" x2="685" y2="388" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="690" cy="388" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="695" y1="388" x2="720" y2="388" stroke="#d42a2a" stroke-width="2"/>
+<rect x="720" y="377" width="120" height="22" rx="4" fill="#fff4e0" stroke="#d97706" stroke-width="1.5"/>
+<text x="780.0" y="392" font-size="12" fill="#1d2329" text-anchor="middle" font-weight="normal">ch 5</text>
+<line x1="840" y1="388" x2="930" y2="388" stroke="#1d2329" stroke-width="2"/>
+<circle cx="930" cy="388" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="935" y1="388" x2="960" y2="388" stroke="#1d2329" stroke-width="2"/>
+<text x="606" y="413" font-size="11" fill="#d97706" text-anchor="start" font-weight="normal">sense: NO → 10k → GPIO 4</text>
+<line x1="210" y1="440" x2="330" y2="440" stroke="#2563eb" stroke-width="2"/>
+<text x="202" y="444" font-size="12" fill="#2563eb" text-anchor="end" font-weight="bold">GPIO 33</text>
+<text x="340" y="444" font-size="12" fill="#1d2329" text-anchor="start" font-weight="bold">IN6</text>
+<text x="510" y="444" font-size="12" fill="#5b6670" text-anchor="end" font-weight="normal">relay 6</text>
+<line x1="520" y1="432" x2="560" y2="432" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="560" cy="432" r="4" fill="#d42a2a"/>
+<line x1="520" y1="446" x2="685" y2="446" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="690" cy="446" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="695" y1="446" x2="720" y2="446" stroke="#d42a2a" stroke-width="2"/>
+<rect x="720" y="435" width="120" height="22" rx="4" fill="#fff4e0" stroke="#d97706" stroke-width="1.5"/>
+<text x="780.0" y="450" font-size="12" fill="#1d2329" text-anchor="middle" font-weight="normal">ch 6</text>
+<line x1="840" y1="446" x2="930" y2="446" stroke="#1d2329" stroke-width="2"/>
+<circle cx="930" cy="446" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="935" y1="446" x2="960" y2="446" stroke="#1d2329" stroke-width="2"/>
+<text x="606" y="471" font-size="11" fill="#d97706" text-anchor="start" font-weight="normal">sense: NO → 10k → GPIO 17</text>
+<line x1="210" y1="498" x2="330" y2="498" stroke="#2563eb" stroke-width="2"/>
+<text x="202" y="502" font-size="12" fill="#2563eb" text-anchor="end" font-weight="bold">GPIO 32</text>
+<text x="340" y="502" font-size="12" fill="#1d2329" text-anchor="start" font-weight="bold">IN7</text>
+<text x="510" y="502" font-size="12" fill="#5b6670" text-anchor="end" font-weight="normal">relay 7</text>
+<line x1="520" y1="490" x2="560" y2="490" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="560" cy="490" r="4" fill="#d42a2a"/>
+<line x1="520" y1="504" x2="685" y2="504" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="690" cy="504" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="695" y1="504" x2="720" y2="504" stroke="#d42a2a" stroke-width="2"/>
+<rect x="720" y="493" width="120" height="22" rx="4" fill="#fff4e0" stroke="#d97706" stroke-width="1.5"/>
+<text x="780.0" y="508" font-size="12" fill="#1d2329" text-anchor="middle" font-weight="normal">ch 7</text>
+<line x1="840" y1="504" x2="930" y2="504" stroke="#1d2329" stroke-width="2"/>
+<circle cx="930" cy="504" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="935" y1="504" x2="960" y2="504" stroke="#1d2329" stroke-width="2"/>
+<text x="606" y="529" font-size="11" fill="#d97706" text-anchor="start" font-weight="normal">sense: NO → 10k → GPIO 18</text>
+<line x1="210" y1="556" x2="330" y2="556" stroke="#2563eb" stroke-width="2"/>
+<text x="202" y="560" font-size="12" fill="#2563eb" text-anchor="end" font-weight="bold">GPIO 16</text>
+<text x="340" y="560" font-size="12" fill="#1d2329" text-anchor="start" font-weight="bold">IN8</text>
+<text x="510" y="560" font-size="12" fill="#5b6670" text-anchor="end" font-weight="normal">relay 8</text>
+<line x1="520" y1="548" x2="560" y2="548" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="560" cy="548" r="4" fill="#d42a2a"/>
+<line x1="520" y1="562" x2="685" y2="562" stroke="#d42a2a" stroke-width="2"/>
+<circle cx="690" cy="562" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="695" y1="562" x2="720" y2="562" stroke="#d42a2a" stroke-width="2"/>
+<rect x="720" y="551" width="120" height="22" rx="4" fill="#fff4e0" stroke="#d97706" stroke-width="1.5"/>
+<text x="780.0" y="566" font-size="12" fill="#1d2329" text-anchor="middle" font-weight="normal">ch 8</text>
+<line x1="840" y1="562" x2="930" y2="562" stroke="#1d2329" stroke-width="2"/>
+<circle cx="930" cy="562" r="5" fill="#ffffff" stroke="#1d2329" stroke-width="1.5"/>
+<line x1="935" y1="562" x2="960" y2="562" stroke="#1d2329" stroke-width="2"/>
+<text x="606" y="587" font-size="11" fill="#d97706" text-anchor="start" font-weight="normal">sense: NO → 10k → GPIO 19</text>
+<line x1="560" y1="142" x2="560" y2="694" stroke="#d42a2a" stroke-width="3"/>
+<line x1="960" y1="156" x2="960" y2="694" stroke="#1d2329" stroke-width="3"/>
+<rect x="542" y="590" width="36" height="44" rx="4" fill="#ffffff" stroke="#d42a2a" stroke-width="1.5"/>
+<text x="560" y="610" font-size="11" fill="#d42a2a" text-anchor="middle" font-weight="bold">10A</text>
+<text x="560" y="624" font-size="11" fill="#d42a2a" text-anchor="middle" font-weight="normal">fuse</text>
+<text x="586" y="616" font-size="11" fill="#d42a2a" text-anchor="start" font-weight="normal">pull to make safe</text>
+<rect x="640" y="666" width="220" height="56" rx="6" fill="#fff7f7" stroke="#d42a2a" stroke-width="1.5"/>
+<text x="750" y="690" font-size="14" fill="#1d2329" text-anchor="middle" font-weight="bold">12 V SLA battery</text>
+<text x="652" y="699" font-size="16" fill="#d42a2a" text-anchor="start" font-weight="bold">+</text>
+<text x="848" y="699" font-size="16" fill="#1d2329" text-anchor="end" font-weight="bold">−</text>
+<line x1="560" y1="694" x2="640" y2="694" stroke="#d42a2a" stroke-width="3"/>
+<line x1="860" y1="694" x2="960" y2="694" stroke="#1d2329" stroke-width="3"/>
+<line x1="210" y1="654" x2="330" y2="654" stroke="#1d2329" stroke-width="2"/>
+<text x="202" y="658" font-size="12" fill="#1d2329" text-anchor="end" font-weight="bold">GND</text>
+<text x="340" y="658" font-size="12" fill="#1d2329" text-anchor="start" font-weight="bold">GND</text>
+<line x1="210" y1="678" x2="330" y2="678" stroke="#d42a2a" stroke-width="2"/>
+<text x="202" y="682" font-size="12" fill="#d42a2a" text-anchor="end" font-weight="bold">5V / VIN</text>
+<text x="340" y="682" font-size="12" fill="#1d2329" text-anchor="start" font-weight="bold">VCC</text>
+<text x="270.0" y="704" font-size="11" fill="#5b6670" text-anchor="middle" font-weight="normal">power header</text>
+<rect x="30" y="750" width="1060" height="96" rx="6" fill="#f8fafc" stroke="#5b6670" stroke-width="1.5"/>
+<text x="46" y="774" font-size="15" fill="#1d2329" text-anchor="start" font-weight="bold">Notes</text>
+<text x="46" y="796" font-size="13" fill="#1d2329" text-anchor="start" font-weight="normal">The 12 V + is fused, then daisy-chained screw to screw across COM1-COM8. Each NO goes to clip A; clip B of every channel returns to the NEG Wago bus.</text>
+<text x="46" y="816" font-size="13" fill="#1d2329" text-anchor="start" font-weight="normal">The fuse is the master safety: pull it and the firing circuit is dead whatever the software does. The ESP32 is USB-powered; its 5V/VIN feeds the relay module VCC.</text>
+<text x="46" y="836" font-size="13" fill="#1d2329" text-anchor="start" font-weight="normal">Continuity: an igniter on a channel pulls its sense pin LOW through the 10k series resistor, which also protects the pin from 12 V while the relay fires.</text>
+<line x1="30" y1="860" x2="56" y2="860" stroke="#2563eb" stroke-width="3"/>
+<text x="64" y="864" font-size="12" fill="#5b6670" text-anchor="start" font-weight="normal">signal</text>
+<line x1="30" y1="878" x2="56" y2="878" stroke="#d42a2a" stroke-width="3"/>
+<text x="64" y="882" font-size="12" fill="#5b6670" text-anchor="start" font-weight="normal">+12 V / +5 V</text>
+<line x1="250" y1="860" x2="276" y2="860" stroke="#1d2329" stroke-width="3"/>
+<text x="284" y="864" font-size="12" fill="#5b6670" text-anchor="start" font-weight="normal">return / GND</text>
+<line x1="250" y1="878" x2="276" y2="878" stroke="#d97706" stroke-width="3"/>
+<text x="284" y="882" font-size="12" fill="#5b6670" text-anchor="start" font-weight="normal">continuity sense</text>
+<circle cx="490" cy="860" r="4" fill="#d42a2a"/>
+<text x="502" y="864" font-size="12" fill="#5b6670" text-anchor="start" font-weight="normal">dot = wires joined; wires that cross without a dot are not connected</text>
+</svg>

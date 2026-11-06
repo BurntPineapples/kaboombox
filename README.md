@@ -12,6 +12,12 @@ reports back, so you can see on the panel which channels are ready before you ar
 > responsible for following the laws where you live. Never bypass the fuse, the arming
 > key or the heartbeat auto-disarm.
 
+<p align="center">
+  <img src="docs/images/field-box-ammo-can.jpg" width="32%" alt="Field box: ammo can with the printed red wire window on the front rim">
+  <img src="docs/images/panel-prototype.jpg" width="32%" alt="Panel box electronics on the bench: ESP32 on a screw-terminal board, LCD, key switch, LEDs">
+  <img src="docs/images/field-box-electronics.jpg" width="32%" alt="Field box electronics: ESP32, 8-channel relay module and Wago connectors">
+</p>
+
 ## How it works
 
 ```
@@ -71,33 +77,64 @@ hardware/
   enclosure/             build123d scripts, STEP/STL files, print/fit test pieces
     inventor/            Autodesk Inventor parts (.ipt/.ipj) and the plate STLs
     archive/             earlier OpenSCAD versions
-docs/                    wiring sheets and schematics (open the .html files in a browser)
+docs/                    wiring diagrams (.svg), wiring sheets (.html, open in a browser)
+  images/                photos
   archive/               outdated sheets from the 7-segment version, don't build from these
 ```
 
 ## Parts list
 
-Roughly what one complete set needs. Check the wiring sheets in `docs/` for details.
+What one complete set uses. The search terms are what to type into Amazon/AliExpress.
+
+### Panel box (handheld)
+
+| Qty | Part | Search for / notes |
+|---|---|---|
+| 1 | ESP32 38-pin dev board | "ESP32 NodeMCU ESP-32S 38 pin" |
+| 1 | ESP32 screw-terminal breakout board | "ESP32 38 pin terminal expansion board". Saves soldering, every wire gets a screw |
+| 1 | 16x2 LCD with I2C backpack | "1602 LCD I2C PCF8574". Address 0x27 or 0x3F |
+| 1 | 3-position key selector switch, 22 mm | "22mm 3 position key selector switch XB2". Needs **two NO contact blocks** (YJ139-XB2 or similar), one per armed position |
+| 8 | Momentary push buttons | Fire buttons. Any panel-mount momentary NO button |
+| 1 | Momentary push button | MODE |
+| 1 | Toggle switch with safety cover | Power. Mine is a KN3C-101 with the flip-up red cover |
+| 8 | LEDs | Channel ready/on |
+| 1 + 1 | Green LED, red LED | LINK status |
+| 10 | 220 Ω resistors | One per LED |
+| 4 | 10 kΩ resistors | Pull-ups for buttons 5-8 |
+| 1 | 4x AA battery holder | NiMH rechargeables recommended |
+| 1 | Half-size breadboard or perfboard | Resistors, LEDs, power rails |
+| 1 | Case | I used a small lockable document case; the printed plate drops into a 9-3/8 x 6-1/4 in opening |
+| 8+ | M2 x 6 screws | 4 plate-to-legs, 4 tray-to-legs, more if you screw boards down |
+
+### Field box
+
+| Qty | Part | Search for / notes |
+|---|---|---|
+| 1 | ESP32 38-pin dev board | Same as above, plus a screw-terminal breakout if you like |
+| 1 | ELEGOO 8-channel 5 V relay module | Inputs are active LOW |
+| 1 | 12 V SLA battery | Firing power, kept separate from the ESP32 power |
+| 1 | Inline fuse holder + 10 A fuse | **The master safety.** No fuse, no firing power |
+| 4 | 100 kΩ resistors | Sense pull-ups, channels 1-4 |
+| 8 | 10 kΩ resistors | Sense series resistors, one per channel |
+| 2-3 | Wago 221 5-slot lever connectors | The shared negative return bus |
+| 16 | Alligator clips + wire | Two per channel |
+| 1 | USB power source + cable | Powers the field ESP32 (a small power bank works) |
+| 1 | Ammo can | About 11 in inside length; the printed floor and front window frame fit it |
+
+### Optional
 
 | Qty | Part | Notes |
 |---|---|---|
-| 2 | ESP32 38-pin dev board (NodeMCU ESP-32S or similar) | Measure the pin-row spacing before ordering PCBs (see below) |
-| 1 | ELEGOO 8-channel 5 V relay module | Active-LOW inputs |
-| 1 | 16x2 LCD with I2C backpack (PCF8574) | Address 0x27 or 0x3F |
-| 8 | Momentary push buttons | Fire buttons |
-| 1 | Momentary push button | MODE |
-| 1 | 3-position key switch | Middle = off, left/right = on |
-| 10 | LEDs | 8 channel + 1 green + 1 red link LED |
-| 10 | 220 Ω resistor | LED current limit |
-| 4 | 10 kΩ resistor | Pull-ups for buttons 5-8 (GPIO 34-39 have no internal pull-up) |
-| 4 | 100 kΩ resistor | Field box sense pull-ups, channels 1-4 |
-| 8 | 10 kΩ resistor | Field box sense series resistors |
-| 1 | 12 V SLA battery | Firing power |
-| 1 | Inline fuse holder + 10 A fuse | **The master safety. No fuse, no firing power.** |
-| 1 | 4x AA holder + toggle switch | Panel power (NiMH is easier on the LCD than fresh alkalines) |
-| 16 | Alligator clips | 2 per channel |
-| - | Screw terminals, female headers, wire, Wago connectors | See the PCB section |
-| 2 | PCBs (optional) | Controller 100 x 84 mm, field 100 x 75 mm |
+| 2 | PCBs | Replace the breadboards: controller 100 x 84 mm, field 100 x 75 mm. See [PCBs](#pcbs) |
+| - | Screw terminals (5.08 mm), 1x19 female headers, 1x10 pin header | For the PCBs |
+| - | PETG or ASA filament | For the printed parts |
+
+<p align="center">
+  <img src="docs/images/key-switch-front.jpg" width="24%" alt="22 mm key selector switch, front">
+  <img src="docs/images/key-switch-contacts.jpg" width="24%" alt="Key switch rear with two NO contact blocks">
+  <img src="docs/images/power-toggle.jpg" width="24%" alt="KN3C-101 power toggle with red safety cover">
+  <img src="docs/images/lcd-i2c-backpack.jpg" width="24%" alt="16x2 LCD I2C backpack pins: GND VCC SDA SCL">
+</p>
 
 ## Flashing the firmware
 
@@ -140,6 +177,21 @@ saved sequence) is set from the menu on the panel and stored in flash.
 
 If you change the message format, bump `PROTO_VER` in both sketches. Boards with a
 different `PROTO_VER` ignore each other instead of misfiring.
+
+## Wiring
+
+These diagrams are drawn straight from the pin tables in the sketches
+(`python docs/make_wiring.py .` redraws them if you change a pin). The step-by-step
+sheets in [`docs/`](#docs) go wire by wire.
+
+![Panel box wiring diagram](docs/wiring-controller.svg)
+
+![Field box wiring diagram](docs/wiring-field.svg)
+
+<p align="center">
+  <img src="docs/images/panel-box-inside.jpg" width="32%" alt="Inside the panel case: ESP32 on its terminal board and the breadboard">
+  <img src="docs/images/panel-leds.jpg" width="32%" alt="Breadboard with the channel and link LEDs and their resistors">
+</p>
 
 ## Pin maps
 
@@ -203,19 +255,40 @@ The panel is a printed 9.2 x 6.1 in plate with an angled LCD pod, legs and an in
 parts tray, made to drop into a box with a 9-3/8 x 6-1/4 in opening. The field parts are a floor plate and a front window
 frame for an ammo can.
 
-Ready-to-print files are in `hardware/enclosure/`:
+### What to print
 
-| File | Part |
+All in `hardware/enclosure/`. Print the `_test` pieces first: they're thin slices of the
+real part, take a few minutes, and tell you if the fit is right before you spend hours
+on the full print.
+
+| File | Part | How to print |
+|---|---|---|
+| [`controller_full.stl`](hardware/enclosure/controller_full.stl) | Panel faceplate (1/8 in thick) with the 30° LCD pod, M2 counterbores in the corners | Plate bottom on the bed (as exported) |
+| [`legs_print.stl`](hardware/enclosure/legs_print.stl) | Four corner legs + floor ring, one piece | As exported, floor ring on the bed |
+| [`tray_print.stl`](hardware/enclosure/tray_print.stl) | Parts tray: breadboard corral, ESP32 corners, battery cradle | Slab down, no supports |
+| [`field_floor.stl`](hardware/enclosure/field_floor.stl) | Insulating floor plate for the ammo can | Skirt up (top face on the bed), no supports |
+| [`field_prop.stl`](hardware/enclosure/field_prop.stl) | Front window frame that clamps on the can rim; wires pass through it | Standing on its end with a brim, no supports |
+
+Fit tests:
+
+| File | Checks |
 |---|---|
-| `controller_full.stl` | Panel plate with the LCD pod |
-| `legs_print.stl` | Panel legs + floor ring (one piece) |
-| `tray_print.stl` | Parts tray that sits on the legs |
-| `field_floor.stl` | Field box floor plate (print skirt-up, no supports) |
-| `field_prop.stl` | Field box front window frame |
-| `*_test.stl` | Thin fit-test versions. Print these first, they take minutes |
+| [`controller_plate_test.stl`](hardware/enclosure/controller_plate_test.stl) | 1.5 mm slice of the faceplate: outline, every hole, LCD opening |
+| [`legs_test.stl`](hardware/enclosure/legs_test.stl) | Floor ring and the bottom 15 mm of the legs: footprint on the box floor |
+| [`field_floor_test.stl`](hardware/enclosure/field_floor_test.stl) | Floor outline in the can |
+| [`field_prop_test.stl`](hardware/enclosure/field_prop_test.stl) | Rim and lid grooves of the window frame |
 
-The `.step` files are the same parts for CAD. PETG or ASA hold up better outdoors than
-PLA, which can soften in a hot car or in direct sun.
+Pieces for CAD, not for printing on their own:
+
+| File | What it is |
+|---|---|
+| `lcd_pod_30.stl` / `lcd_pod_30_placed.stl` | The LCD pod by itself (already joined into `controller_full`) |
+| `lcd_pod_cutter.stl` / `lcd_pod_cutter_placed.stl` | The cut-out the pod needs in a plain plate |
+| `inventor/Controller.stl`, `inventor/Controller_9.200x6.100.stl` | The plate exported from Inventor, before and after `shrink_plate.py` |
+| `archive/*.stl` | Earlier OpenSCAD versions, kept for history |
+
+Every printable part also has a `.step` file for CAD. PETG or ASA hold up better outdoors
+than PLA, which can soften in a hot car or in direct sun.
 
 To regenerate them you need Python 3 and build123d:
 
