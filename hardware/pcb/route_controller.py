@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Burnt pineapples
+# SPDX-License-Identifier: MIT
+
 """Route the single controller board: DSN -> freerouting -> SES back.
   "E:\\KiCad\\bin\\python.exe" route_controller.py <freerouting.jar>
 """

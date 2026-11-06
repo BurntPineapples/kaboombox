@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Burnt pineapples
+# SPDX-License-Identifier: MIT
+
 # Parts tray for the controller box: lies on top of the legs' floor ring, 4x M2x6 down into the ring.
 # Same frame as legs_step.py (Y up, sketch u = X, v = -Z). Layout below in mm, sketch coords.
 #  breadboard : full corral along the top (LCD) edge, its own sticky back holds it down

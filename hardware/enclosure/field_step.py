@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Burnt pineapples
+# SPDX-License-Identifier: MIT
+
 # Field unit parts for the ammo can. Frame: Z up, Z=0 = rim top (prop) / floor (plate),
 # X along the can length (0 = can centre, front/latch wall inside face at -CAN_L/2), Y centered.
 #  field_floor  : insulating floor plate, parts self-tap into it (M2 -> 1.6 mm pilot, same screws as the controller).

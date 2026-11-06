@@ -28,3 +28,6 @@ OldVersions/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# local-only tools
+hardware/enclosure/parts_bay.html

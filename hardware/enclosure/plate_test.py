@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Burnt pineapples
+# SPDX-License-Identifier: MIT
+
 # Flat 1.5 mm test copy of the controller plate (outline + every hole + LCD opening),
 # made by slicing the real plate STL just above its bottom face. Print it flat, check fit in the box.
 import struct, shutil, numpy as np

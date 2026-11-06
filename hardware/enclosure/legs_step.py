@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Burnt pineapples
+# SPDX-License-Identifier: MIT
+
 # Legs for the 9.200 x 6.100" plate, one printed part, placed in the Inventor frame
 # (Y up, plate bottom at Y=0, X -0.1..-6.2 = button edge..top edge, Z -0.05..-9.25).
 # Floor ring + 4 corner legs + 45° gussets. Legs go straight up to the plate

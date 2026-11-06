@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Burnt pineapples
+# SPDX-License-Identifier: MIT
+
 # Shrink the plate without moving any button/LED/key/power/pod feature.
 #  width (Inventor Z): slide each END (corner chamfers, corner holes, end face) inward.
 #  depth (Inventor X): slide the BUTTON edge (X=0 face, its 2 chamfers, its 2 corner holes) toward -X.

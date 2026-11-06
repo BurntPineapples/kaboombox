@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Burnt pineapples
+# SPDX-License-Identifier: MIT
+
 """
 FIELD (fuse/igniter box) PCB generator — labeled, single board.
 Run with KiCad's bundled Python:

@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Burnt pineapples
+# SPDX-License-Identifier: MIT
+
 """
 Single-board CONTROLLER PCB generator (LCD version, no lid/tray split).
 Run with KiCad's bundled Python:

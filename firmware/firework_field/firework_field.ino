@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Burnt pineapples
+// SPDX-License-Identifier: MIT
+// Provided as-is with no warranty. Read DISCLAIMER.md before building or using this.
+
 /*
  * ============================================================
  *  FIREWORK / SHOW FIELD UNIT  —  flash this to the RELAY box

@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Burnt pineapples
+# SPDX-License-Identifier: MIT
+
 """30-degree LCD pod as real solids for Inventor (STEP).
 Axes match the Inventor plate: X = across width (centered), Y = toward the
 top edge (back), Z = up. Origin = front-bottom-center edge of the pod
