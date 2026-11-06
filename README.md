@@ -1,6 +1,7 @@
-# ESP32 Wireless Firework Controller
+# KaBoomBox
 
-A two-box remote firing system for small firework and effects shows. A handheld panel with
+**An ESP32 wireless firework firing system.** A two-box remote firing system for small
+firework and effects shows. A handheld panel with
 8 fire buttons and an arming key talks over ESP-NOW to a field box with an 8-channel
 relay board and a 12 V battery. The field box checks each igniter for continuity and
 reports back, so you can see on the panel which channels are ready before you arm.
@@ -11,6 +12,13 @@ reports back, so you can see on the panel which channels are ready before you ar
 > [DISCLAIMER.md](DISCLAIMER.md) before you build or use anything here. You are
 > responsible for following the laws where you live. Never bypass the fuse, the arming
 > key or the heartbeat auto-disarm.
+
+> [!WARNING]
+> **Work in progress.** I'm still actively changing and revising this project. The PCBs,
+> printed parts, firmware and docs here are **not final** and may have mistakes or not
+> match each other. The current PCB revisions may not have been built or tested yet. If you order boards,
+> print parts or build any of this, you do it **at your own risk**: check every file
+> yourself first, and expect that things may change after you've built them.
 
 <p align="center">
   <img src="docs/images/field-box-ammo-can.jpg" width="32%" alt="Field box: ammo can with the printed red wire window on the front rim">
@@ -77,8 +85,8 @@ hardware/
   enclosure/             build123d scripts, STEP/STL files, print/fit test pieces
     inventor/            Autodesk Inventor parts (.ipt/.ipj) and the plate STLs
     archive/             earlier OpenSCAD versions
-docs/                    wiring diagrams (.svg), wiring sheets (.html, open in a browser)
-  images/                photos
+docs/                    wiring sheets (.html, open in a browser)
+  images/                photos and wiring diagrams
   archive/               outdated sheets from the 7-segment version, don't build from these
 ```
 
@@ -180,13 +188,12 @@ different `PROTO_VER` ignore each other instead of misfiring.
 
 ## Wiring
 
-These diagrams are drawn straight from the pin tables in the sketches
-(`python docs/make_wiring.py .` redraws them if you change a pin). The step-by-step
-sheets in [`docs/`](#docs) go wire by wire.
+The pin numbers in these diagrams match the sketches. The step-by-step sheets in
+[`docs/`](#docs) go wire by wire.
 
-![Panel box wiring diagram](docs/wiring-controller.svg)
+![Panel box wiring diagram](docs/images/wiring-panel-box.png)
 
-![Field box wiring diagram](docs/wiring-field.svg)
+![Field box wiring diagram](docs/images/wiring-field-box.png)
 
 <p align="center">
   <img src="docs/images/panel-box-inside.jpg" width="32%" alt="Inside the panel case: ESP32 on its terminal board and the breadboard">

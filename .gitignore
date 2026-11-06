@@ -31,3 +31,4 @@ desktop.ini
 
 # local-only tools
 hardware/enclosure/parts_bay.html
+docs/make_wiring.py

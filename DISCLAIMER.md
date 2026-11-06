@@ -15,6 +15,19 @@ UL, CE, FCC, ATF, NFPA, BAM, HSE or any local equivalent). It has **not** been
 independently reviewed for safety. It is **not** professional pyrotechnic equipment and
 must not be used as a substitute for it.
 
+## 1a. Work in progress: nothing here is final
+
+This project is under active development and is revised often. The PCB designs, gerber
+files, 3D models, printed-part files, firmware, wiring diagrams and documentation are
+**not final**. They may contain errors, may not match each other, and may change at any
+time without notice. Designs published here have not necessarily been built, tested or
+verified in their current form.
+
+Ordering PCBs, printing parts or building anything from this repository is done
+**entirely at your own risk and expense**. The author(s) are not responsible for wasted
+money, materials or time, for parts that do not fit or do not work, or for any harm caused
+by building or using an unfinished design.
+
 ## 2. Pyrotechnics are dangerous
 
 Fireworks, igniters, e-matches, steel wool and every other pyrotechnic or ignition device
