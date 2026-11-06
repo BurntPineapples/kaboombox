@@ -5,15 +5,22 @@
 Axes match the Inventor plate: X = across width (centered), Y = toward the
 top edge (back), Z = up. Origin = front-bottom-center edge of the pod
 (sits on the plate top). Units: mm in the STEP (Inventor converts).
-Outputs: lcd_pod_30.step (Join to plate), lcd_pod_cutter.step (Cut plate)."""
+Outputs: lcd_pod_30.step (Join to plate), lcd_pod_cutter.step (Cut plate).
+
+Run: python lcd_pod_step.py   (needs: pip install build123d)
+Then run plate_test.py, which joins the pod onto the plate as controller_full.
+For a different LCD, measure it and change the LCD numbers below. To tilt the
+screen more or less, change ang."""
 import math
 from build123d import *
 
-# ---- LCD (verify with calipers) ----
+# LCD module, in mm. Measure yours with calipers; these fit a common 1602 + I2C backpack.
 mod_h, win_w, win_l = 7.0, 72.0, 25.2      # board-front->bezel face, window
 hole_x, hole_y = 75.0, 31.0                # mounting-hole spacing
 pilot, boss_d = 1.6, 5.0                   # M2 self-tap (same screws as the legs)
-# ---- shape ----
+# Pod shape, in mm and degrees:
+#   ang = screen tilt, Ls = slab length up the slope, t = slab thickness, wall = wall thickness,
+#   W = pod width, roof = roof angle, uc = window centre measured up the slab, back_h = back wall height
 ang, Ls, t, wall, W, roof, uc, back_h = 30, 46, 2.5, 2.5, 120, 45, 24, 8
 h0 = 3.5   # front lip: lifts the slab so nothing dips below the plate top
 c, s = math.cos(math.radians(ang)), math.sin(math.radians(ang))
@@ -67,7 +74,8 @@ export_step(pod, "lcd_pod_30.step"); export_step(cutter, "lcd_pod_cutter.step")
 export_stl(pod, "lcd_pod_30.stl"); export_stl(cutter, "lcd_pod_cutter.stl")
 print("exported")
 
-# ---- placed copies in the user's Inventor part frame ----
+# Placed copies, positioned in my Inventor plate's coordinates so they drop straight in.
+# If your plate is a different size, change top_edge_x / center_z below.
 # Inventor part: Y = up (plate top face at +0.125 in), width along Z (plate Z -9.35..0),
 # top edge (power/key) at X = -6.20 in, buttons toward X = 0.
 # pod X(width) -> -Z, pod Y(toward top edge) -> -X, pod Z(up) -> +Y

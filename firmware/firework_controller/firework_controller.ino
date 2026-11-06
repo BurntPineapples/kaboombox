@@ -3,14 +3,18 @@
 // Provided as-is with no warranty. Read DISCLAIMER.md before building or using this.
 
 /*
- * ============================================================
- *  FIREWORK / SHOW CONTROLLER  —  flash this to the CONTROL PANEL box
- *  (ESP32 with buttons, key switch, LEDs, 16x2 I2C LCD, mode button)
- * ============================================================
- *  Board: "ESP32 Dev Module"
- *  LIBRARY NEEDED: "LiquidCrystal I2C" by Frank de Brabander
+ * KaBoomBox panel (controller) sketch.
+ * Flash this to the handheld box: ESP32 with the fire buttons, key switch,
+ * LEDs, 16x2 I2C LCD and MODE button.
  *
- *  v2: flash the FIELD box with its v2 sketch too. v1 and v2 boxes
+ *  Board: "ESP32 Dev Module"
+ *  Library: "LiquidCrystal I2C" by Frank de Brabander
+ *
+ *  Before your first flash, put your field board's MAC in FIELD_MAC below.
+ *  Most other things you'd want to change are in the block of #defines and
+ *  tables right under the pin map, each with a note on what it does.
+ *
+ *  v2: flash the field box with its v2 sketch too. v1 and v2 boxes
  *  ignore each other (no link, nothing fires) - they never misfire.
  *
  *  16x2 I2C LCD: GND, VCC->5V, SDA->GPIO16, SCL->GPIO5.
@@ -53,13 +57,17 @@
 #include <Preferences.h>
 #include <LiquidCrystal_I2C.h>
 
-#define FW_VERSION     "2.0"
+#define FW_VERSION     "2.0"   // shown on menu page 8 (Info). Bump it when you change the sketch.
 #define USE_LONG_RANGE 0   // 1 = ESP32 long-range radio (more range, lower speed). Set the SAME in the field sketch.
 
-// ====== FIELD UNIT'S MAC ADDRESS ======
+// The field box's MAC address. The field board prints its own MAC on the
+// Serial Monitor (115200 baud) at boot: 44:1D:64:BD:75:50 -> {0x44, 0x1D, ...}
 uint8_t FIELD_MAC[6] = {0x44, 0x1D, 0x64, 0xBD, 0x75, 0x50};
 
-// ---------- pin map ----------
+// Pin map. If you move a wire, change its number here.
+// GPIO 34-39 are input-only with no internal pull-up: fine for buttons with a
+// 10k pull-up to 3V3, useless for LEDs. GPIO 6-11 belong to the flash chip; don't use them.
+// The order of each list is the channel order: BTN_PIN[0] / LED_PIN[0] are channel 1.
 const int BTN_PIN[8] = {13, 14, 25, 26, 34, 35, 36, 39}; // fire buttons -> GND (34-39: external 10k pullup)
 const int LED_PIN[8] = {4, 19, 21, 22, 23, 18, 32, 33};  // channel LEDs via 220R -> GND, HIGH = lit
 const int PIN_KEY_ARMED = 17;
@@ -70,10 +78,12 @@ const int PIN_LED_FAIL   = 12;  // LINK red
 const int PIN_LCD_SDA    = 16;  // I2C SDA
 const int PIN_LCD_SCL    = 5;   // I2C SCL
 
-#define LCD_ADDR 0x27
+#define LCD_ADDR 0x27   // most PCF8574 backpacks are 0x27, some are 0x3F. Serial says so at boot if it's wrong.
 LiquidCrystal_I2C lcd(LCD_ADDR, 16, 2);
 
-// ---------- protocol (must match field sketch) ----------
+// Radio protocol. Everything from here down to the Msg struct must match the
+// field sketch exactly. If you change any of it, change PROTO_VER in BOTH
+// sketches so an old box ignores the new one instead of misreading it.
 #define PROTO_VER    0xA2   // first byte of every packet; not 1-5 so a v1 box can't mistake it for a message type
 #define NO_HEARTBEAT 0xFF   // STATUS.mode when the field isn't hearing us
 #define HOLD_FOREVER 0xFFFF
@@ -96,22 +106,29 @@ typedef struct __attribute__((packed)) {
   uint16_t pulseMs[8]; // FIRE: pulse length per channel
 } Msg;
 
-#define HEARTBEAT_MS   300
-#define LINK_TIMEOUT   1500
+// Timing, all in milliseconds.
+#define HEARTBEAT_MS   300    // how often the panel tells the field the key position. Keep it well under
+                              // the field's HEARTBEAT_TIMEOUT (1500) or the field will keep disarming.
+#define LINK_TIMEOUT   1500   // no STATUS from the field for this long = LINK DOWN on the panel
 #define PING_MS        1000   // constant ping, for round-trip time
-#define PING_TIMEOUT   600
-#define STATUS_PER_2S  8      // field sends STATUS every 250 ms
-#define WEAK_LINK_PCT  60
-#define DEBOUNCE_MS    30
-#define FIRE_FLASH_MS  900
-#define COUNTDOWN_MS   3000
-#define ERR_SHOW_MS    1500
-#define HOLD_MS        800
-#define GUESS_CD_MS    3000
+#define PING_TIMEOUT   600    // a ping with no reply after this counts as lost
+#define STATUS_PER_2S  8      // field sends STATUS every 250 ms. Change with the field's STATUS_MS.
+#define WEAK_LINK_PCT  60     // link quality (%) below this makes the red LINK LED blink
+#define DEBOUNCE_MS    30     // raise this if a button press sometimes counts twice
+#define FIRE_FLASH_MS  900    // how long a channel LED blinks after it fires
+#define COUNTDOWN_MS   3000   // ARMED ALL countdown. The LCD always counts from 3, so if you change
+                              // this, also change the 3s in loop() and updateLCD().
+#define ERR_SHOW_MS    1500   // how long messages like DENIED stay on the LCD
+#define HOLD_MS        800    // how long MODE has to be held to count as a "hold"
+#define GUESS_CD_MS    3000   // how long the LCD shows "FIRING... fuse ~3" after a fire
 #define LCD_REFRESH_MS 150
-#define CHECK_MS       1500
+#define CHECK_MS       1500   // how long System check collects pings before it shows a result
 
+// PROGRAM delays between steps, picked with buttons 1-4. Must stay exactly 4 entries.
 const uint32_t DELAY_OPTS[4] = {500, 1000, 1500, 2000};
+// Link-lost hold choices (seconds) and their LCD names (14 characters max).
+// Keep both lists the same length. If you add or remove one, also change the 6
+// in loadCfg() and the 6 and 5 in menuPress() (case PG_LINKHOLD).
 const uint16_t LINK_HOLD_OPTS[6] = {0, 10, 30, 60, 300, HOLD_FOREVER};
 const char*    LINK_HOLD_NAME[6] = {"off at once", "10 sec", "30 sec", "1 min", "5 min", "til link back"};
 
@@ -120,7 +137,8 @@ const char* TYPE_NAME[3] = {"FIRE", "ON/OFF", "HOLD"};
 enum SubMode  : uint8_t { SUB_SINGLE = 0, SUB_PROGRAM = 1 };
 enum ProgState: uint8_t { PS_IDLE = 0, PS_BUILDING = 1, PS_DELAY = 2 };
 
-// ---------- settings (saved in flash, survive power-off) ----------
+// Settings. Saved in flash, so they survive power-off. If you add a field,
+// change CFG_MAGIC so boards with the old layout reset to defaults instead of loading junk.
 #define CFG_MAGIC 0x5A
 struct Settings {
   uint8_t magic;
@@ -134,7 +152,7 @@ struct Settings {
 } cfg;
 Preferences prefs;
 
-// ---------- state ----------
+// Runtime state
 uint8_t  mode = MODE_DISARMED;     // what the field is told: the key, forced DISARMED by menu / interlock
 uint8_t  keyMode = MODE_DISARMED;  // what the key physically says
 bool     keyFault = false;
@@ -192,7 +210,7 @@ uint8_t  seqIndex = 0;
 uint32_t seqNextMs = 0;
 int      seqCurCh = -1;
 
-// ---------- menu ----------
+// Menu state
 enum Page : uint8_t { PG_LINK, PG_PING, PG_CHECK, PG_CONT, PG_CHAN, PG_LINKHOLD, PG_INPUT, PG_INFO, PG_RESET, PG_COUNT };
 const char* PAGE_NAME[PG_COUNT] = {"Link status", "Ping test", "System check", "Continuity", "Channel setup",
                                    "Link-lost hold", "Input test", "Info", "Reset settings"};
@@ -203,7 +221,10 @@ uint8_t  checkState = 0;           // 0 idle, 1 running, 2 done
 uint32_t checkStartMs = 0;
 char     checkResult[17] = "";
 
-// ---------- settings ----------
+// Saving and loading settings
+// Factory settings, used on first boot and by menu page 9 (Reset settings).
+// Every channel starts as FIRE with a 1.5 s pulse (pulseDs is tenths of a second)
+// and refuses to fire without continuity. PROGRAM delay starts at 1.0 s.
 void defaults() {
   memset(&cfg, 0, sizeof(cfg));
   cfg.magic = CFG_MAGIC;
@@ -222,7 +243,7 @@ void loadCfg() {
   if (!ok) { defaults(); Serial.println("SETTINGS: none saved, using defaults"); }
 }
 
-// ---------- helpers ----------
+// Helpers
 bool isLinkHealthy() {
   return lastStatusMs != 0 && (millis() - lastStatusMs) < LINK_TIMEOUT && fieldMode != NO_HEARTBEAT;
 }
@@ -343,7 +364,7 @@ void startCountdown(uint8_t mask) {
   Serial.printf("ARMED ALL countdown for mask 0x%02X - key to DISARMED aborts\n", mask);
 }
 
-// ---------- menu ----------
+// Menu
 void closeMenu() {
   menuOpen = inChan = inInput = resetArmed = false;
   checkState = 0;
@@ -413,7 +434,7 @@ void menuPress(int i) {
   }
 }
 
-// ---------- buttons ----------
+// Buttons
 void onPress(int i) {
   if (menuOpen) { menuPress(i); return; }
 
@@ -504,7 +525,7 @@ void onModeHold() {
   }
 }
 
-// ---------- LCD ----------
+// LCD
 void lcdLine(uint8_t row, const char* s) {
   char b[17]; uint8_t i = 0;
   for (; i < 16 && s[i]; i++) b[i] = s[i];

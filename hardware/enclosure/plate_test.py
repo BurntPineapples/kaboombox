@@ -3,6 +3,13 @@
 
 # Flat 1.5 mm test copy of the controller plate (outline + every hole + LCD opening),
 # made by slicing the real plate STL just above its bottom face. Print it flat, check fit in the box.
+# The second half builds the real printable plate, controller_full, with the LCD pod joined on.
+#
+# Run: python plate_test.py   (needs: pip install build123d numpy)
+# Run lcd_pod_step.py first; this script imports its *_placed.step files.
+# SRC is the plate exported from Inventor. If you don't have my Inventor folder,
+# point it at inventor/Controller_9.200x6.100.stl in this repo, and delete the
+# shutil.copy lines.
 import struct, shutil, numpy as np
 from build123d import *
 
@@ -36,7 +43,7 @@ test = extrude(sk, 1.5)
 print(f"{len(loops) - 1} holes, outline {test.bounding_box().size.X / 25.4:.3f} x {test.bounding_box().size.Y / 25.4:.3f} in")
 export_stl(test, "controller_plate_test.stl"); shutil.copy("controller_plate_test.stl", r"E:\InventorProjects\Fireworkcontroller")
 
-# ---- full print: same outline/holes at 0.125", M2 corner holes, LCD pod re-joined on top ----
+# Full print: same outline and holes at 0.125" thick, M2 corner holes, LCD pod joined on top
 IN = 25.4
 LEGS = [(-5.775, 8.907), (-5.767, 0.478), (-0.530, 0.478), (-0.530, 8.848)]   # corner holes (X, -Z) in, = legs_step.py
 full = loops[0]

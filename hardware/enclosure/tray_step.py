@@ -8,6 +8,14 @@
 #  battery    : 3-wall cradle open toward the button edge, velcro strap through 2 slots;
 #               lift the plate+legs out, undo the strap, slide the pack out sideways
 # Print slab-down, no supports.
+#
+# Run: python tray_step.py   (needs: pip install build123d)
+# Writes tray_placed.step and tray_print.stl, and copies them to my Inventor folder
+# (delete the shutil.copy line if you don't have it).
+# Using a different breadboard, ESP32 board or battery pack? Measure it and change
+# BB / ESP / BAT below; the walls are built around those sizes. The box numbers on the
+# first line must match legs_step.py. The script stops with "a wall hits a leg/gusset"
+# if a part no longer fits between the legs.
 import shutil
 from build123d import *
 
@@ -16,6 +24,7 @@ BOX_DEPTH, DROP, PLATE_T, RING_T, DEPTH = 5.500, 0.0625, 0.125, 3.0, 6.100   # =
 B = DEPTH - 6.200
 Y_TOP = -(BOX_DEPTH - DROP - PLATE_T) * IN + RING_T      # ring top = tray bottom
 T, WALL, CLR, H = 3.0, 1.2, 0.5, 6.0     # tray (M2x6 = tray + ring, flush), wall, fit gap, wall height
+# Part footprints in mm (width x length). Measure your own parts.
 BB  = (57.15, 165.10)                    # breadboard   u x v (2.25 x 6.5 in)
 ESP = (63.07, 87.63)                     # ESP32 board  (2.483 x 3.45)
 BAT = (64.52, 70.36)                     # 4xAA pack    (2.54 x 2.77)

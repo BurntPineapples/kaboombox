@@ -7,6 +7,14 @@
 # underside; an M2 screw through each plate corner hole bites into the leg top.
 # Leg/part positions come from Controller_9.200.stl (bottom-face loops); button-side ones follow the
 # button edge, which shrink_plate.py moved in by 6.200-DEPTH.
+#
+# Run: python legs_step.py   (needs: pip install build123d)
+# Writes legs_placed.step, legs_print.stl and legs_test.stl into this folder, and copies
+# them to my Inventor folder (delete the shutil.copy lines if you don't have it).
+# For a different box, measure its inside depth and change BOX_DEPTH. The leg positions
+# match the plate's corner holes; if you move a hole, change `legs` here AND LEGS in
+# plate_test.py. The script stops with "a leg hits a part" if a leg would land on a
+# button, the key switch or the power switch.
 import shutil
 from build123d import *
 

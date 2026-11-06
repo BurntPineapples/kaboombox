@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: MIT
 
 """
-FIELD (fuse/igniter box) PCB generator — labeled, single board.
-Run with KiCad's bundled Python:
+Builds the field box PCB: field/field.kicad_pcb.
+Run it with KiCad's own Python, not your normal one:
   "E:\\KiCad\\bin\\python.exe" generate_field.py
 
-field/field.kicad_pcb:
+What's on the board:
   - ESP32 38-pin devkit socket (GPIO # on every pad)
   - 4x 100k sense pull-ups (ch1-4 input-only pins)
   - 8x 10k series resistors (sense pin -> relay NO tap)
@@ -15,17 +15,27 @@ field/field.kicad_pcb:
 Pin map matches firework_field.ino:
   RELAY IN1..8 = 26,27,14,13,25,33,32,16 ; SENSE1..8 = 36,39,34,35,4,17,18,19
 
-!!! ESP_ROW_SPACING: 25.4mm (1.0") default; measure yours (25.4 or 22.86). !!!
+Measure before ordering: ESP_ROW_SPACING is the centre-to-centre distance
+between the ESP32's two pin rows (usually 25.4 mm, sometimes 22.86 mm).
+
+Changing things:
+  - FP_ROOT must point at your KiCad footprint folder.
+  - Positions in build_field() are mm from the board's top-left corner.
+  - Pads with the same net name get connected.
+  - If you move a relay or sense pin in the firmware, change the matching
+    pin in the left/right socket maps in build_field().
+  - Running this wipes the routing. Route it again afterwards (KiCad's
+    router or freerouting, same steps as route_controller.py).
 """
 
 import os
 import pcbnew
 
-FP_ROOT = r"E:\KiCad\share\kicad\footprints"
+FP_ROOT = r"E:\KiCad\share\kicad\footprints"   # change to your KiCad install's footprints folder
 OUT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-ESP_ROW_SPACING = 25.4  # mm  <-- MEASURE YOUR ESP32! (25.4 or 22.86)
-ORIGIN_X = 100.0
+ESP_ROW_SPACING = 25.4  # mm, measure your ESP32 (usually 25.4, sometimes 22.86)
+ORIGIN_X = 100.0        # where the board sits on KiCad's page; doesn't affect the board itself
 ORIGIN_Y = 100.0
 
 

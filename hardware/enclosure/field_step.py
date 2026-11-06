@@ -10,11 +10,17 @@
 #                 lid's front lip, whose bottom edge rests on the ledge GAP_FRONT up. Lid + can lock it.
 #                 Wires (and later a brush strip) go through the open window.
 #                 STEP is placed in the can; STL prints standing on its end (use a brim), no supports.
+#
+# Run: python field_step.py   (needs: pip install build123d)
+# Writes field_floor / field_prop .step + .stl and two quick fit-test STLs into this folder.
+# To fit a different can, measure it and change the can numbers just below; everything
+# else is worked out from them. The shutil.copy lines also drop copies into my Inventor
+# folder; delete them if you don't have that folder.
 import shutil
 from build123d import *
 
 IN = 25.4
-# ---- can (inches) -- MEASURE / TUNE ----
+# Can dimensions, in inches. Measure your can and change these first.
 CAN_L        = 10.875         # inside length at the rim (measured ~11, minus 1/8 for safety)
 CAN_W_MIN    = 5.5            # inside width at the rim
 R_CORN       = 0.375          # can inside corner radius (guess, big = safe); the prop stops where the corner curve starts
@@ -23,7 +29,7 @@ LID_T        = 0.050          # lid lip sheet thickness, caliper
 LID_GAP      = 0.04           # lid lip inside face -> rim outside face, lid closed (guess)
 FLOOR_L, FLOOR_W = 10.625, 5.25  # floor plate size (inside floor minus clearance)
 GAP_FRONT    = 1.0            # rim top -> bottom edge of the lid's front lip (max 1" or the sides open)
-# ---- prop (mm) ----
+# Window frame (prop) sizes, in mm. CLR is the fit gap: raise it if the frame is too tight on the rim.
 CLR, WALL, DEPTH = 0.5, 2.5, 10.0      # fit gap, groove wall thickness, body depth into the can
 SLEEVE_D, LEG_D, LIP_H = 12.0, 8.0, 6.0  # rim groove: inside sleeve / outside leg depth; lid lip groove depth
 TILT = 1.0                             # extra lid groove width: the propped lid tilts ~8 deg over LIP_H
@@ -31,8 +37,8 @@ POST, TOP, BOT = 10.0, 6.0, 2.0        # window side posts, rail above / below t
 
 def rrect(l, w, r): return RectangleRounded(l, w, r)
 
-# ---------------- floor plate ----------------
-PLATE_T, SKIRT_H, SKIRT_W = 5.0, 6.0, 3.0
+# Floor plate
+PLATE_T, SKIRT_H, SKIRT_W = 5.0, 6.0, 3.0   # mm: plate thickness, skirt height (clears the floor rib), skirt wall
 fl = extrude(rrect(FLOOR_L * IN, FLOOR_W * IN, 0.375 * IN), PLATE_T)
 ring = rrect(FLOOR_L * IN, FLOOR_W * IN, 0.375 * IN) - rrect(FLOOR_L * IN - 2 * SKIRT_W, FLOOR_W * IN - 2 * SKIRT_W, 0.375 * IN - SKIRT_W)
 fl += extrude(ring, -SKIRT_H)
@@ -40,7 +46,7 @@ for sx in (-1, 1):   # finger holes to lift it out
     fl -= Pos(sx * (FLOOR_L / 2 - 0.75) * IN, 0, 0) * Cylinder(11, 50)
 fl = Pos(0, 0, SKIRT_H) * fl          # skirt bottom on the can floor
 
-# ---------------- front lid prop ----------------
+# Front window frame ("prop")
 HW = (CAN_W_MIN / 2 - R_CORN) * IN               # half width: straight part of the rim / lid lip only
 def blk(xa, xb, za, zb): return Pos((xa + xb) / 2, 0, (za + zb) / 2) * Box(xb - xa, 2 * HW, zb - za)
 x0 = -CAN_L / 2 * IN                             # front wall inside face (outside is -X)

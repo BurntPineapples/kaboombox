@@ -3,11 +3,15 @@
 // Provided as-is with no warranty. Read DISCLAIMER.md before building or using this.
 
 /*
- * ============================================================
- *  FIREWORK / SHOW FIELD UNIT  —  flash this to the RELAY box
- *  (the ESP32 wired to the 8-channel relay module)
- * ============================================================
+ * KaBoomBox field sketch.
+ * Flash this to the relay box: the ESP32 wired to the 8-channel relay module.
+ *
  *  Board setting in Arduino IDE: "ESP32 Dev Module"
+ *  No extra libraries needed.
+ *
+ *  Before your first flash, put your panel board's MAC in CONTROLLER_MAC
+ *  below. The limits you might want to change (pulse length cap, heartbeat
+ *  timeout) are in the #defines under the Msg struct.
  *
  *  v2: flash the CONTROLLER with its v2 sketch too. v1 and v2 boxes
  *  ignore each other (no link, nothing fires) - they never misfire.
@@ -51,14 +55,19 @@
 
 #define USE_LONG_RANGE 0   // 1 = ESP32 long-range radio (more range, lower speed). Set the SAME in the controller sketch.
 
-// ====== PASTE THE CONTROLLER'S MAC ADDRESS HERE ======
+// The panel box's MAC address. The panel prints its own MAC on the Serial
+// Monitor (115200 baud) at boot: EC:E3:34:19:B1:F0 -> {0xEC, 0xE3, ...}
 uint8_t CONTROLLER_MAC[6] = {0xEC, 0xE3, 0x34, 0x19, 0xB1, 0xF0};
 
-// ---------- pin map (matches the wiring diagram) ----------
+// Pin map (matches the wiring diagram). List order is channel order:
+// RELAY_PIN[0] and SENSE_PIN[0] are channel 1. If you rewire, change the numbers here.
+// Sense pins 34-39 are input-only with no internal pull-up, which is why channels
+// 1-4 need the external 100k pull-ups. Don't put a relay on 34-39, they can't drive outputs.
 const int RELAY_PIN[8] = {26, 27, 14, 13, 25, 33, 32, 16}; // ELEGOO IN1-IN8, active LOW
 const int SENSE_PIN[8] = {36, 39, 34, 35, 4, 17, 18, 19};  // LOW = igniter connected
 
-// ---------- protocol (must match controller sketch) ----------
+// Radio protocol. Must match the panel sketch exactly, down to the Msg struct.
+// If you change any of it, change PROTO_VER in BOTH sketches.
 #define PROTO_VER    0xA2   // first byte of every packet; not 1-5 so a v1 box can't mistake it for a message type
 #define NO_HEARTBEAT 0xFF   // STATUS.mode when we aren't hearing the controller
 #define HOLD_FOREVER 0xFFFF
@@ -81,12 +90,16 @@ typedef struct __attribute__((packed)) {
   uint16_t pulseMs[8]; // FIRE: pulse length per channel
 } Msg;
 
+// Limits, in milliseconds. These are enforced here on the field box, whatever the panel asks for.
 #define MAX_PULSE_MS      10000 // hard cap on any one pulse, whatever the controller asks
-#define MIN_PULSE_MS      50
-#define HEARTBEAT_TIMEOUT 1500
-#define STATUS_MS         250   // controller measures link quality from these
+#define MIN_PULSE_MS      50    // shorter requests are stretched to this
+#define HEARTBEAT_TIMEOUT 1500  // no heartbeat for this long = disarm and cut any pulse. This is a
+                                // safety limit: never make it longer. Shorter is OK as long as it
+                                // stays several times the panel's HEARTBEAT_MS (300).
+#define STATUS_MS         250   // controller measures link quality from these. If you change it,
+                                // change STATUS_PER_2S in the panel sketch to 2000 / STATUS_MS.
 
-// ---------- state ----------
+// Runtime state
 volatile uint8_t  ctrlMode = MODE_DISARMED;
 volatile uint32_t lastHeartbeatMs = 0;
 volatile uint8_t  fireRequestMask = 0;

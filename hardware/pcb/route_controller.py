@@ -1,8 +1,17 @@
 # Copyright (c) 2026 Burnt pineapples
 # SPDX-License-Identifier: MIT
 
-"""Route the single controller board: DSN -> freerouting -> SES back.
+"""Auto-routes the controller board with freerouting.
+Exports a DSN, runs freerouting on it, then pulls the routes (SES) back
+into controller/controller.kicad_pcb and saves it.
+
+Needs Java and the freerouting .jar (github.com/freerouting/freerouting):
   "E:\\KiCad\\bin\\python.exe" route_controller.py <freerouting.jar>
+
+To route a different board, change `name` below (the folder and file name
+must match, like field/field.kicad_pcb). "-mp 20" caps freerouting at 20
+routing passes; raise it if boards come back with unrouted nets.
+Check the result with KiCad's DRC before ordering.
 """
 import os, subprocess, sys
 import pcbnew

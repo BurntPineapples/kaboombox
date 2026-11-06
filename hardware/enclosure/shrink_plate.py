@@ -5,6 +5,11 @@
 #  width (Inventor Z): slide each END (corner chamfers, corner holes, end face) inward.
 #  depth (Inventor X): slide the BUTTON edge (X=0 face, its 2 chamfers, its 2 corner holes) toward -X.
 #   python shrink_plate.py [new_width_in] [new_depth_in]      (default 9.200 6.100)
+#
+# Needs numpy. Works straight on the STL triangles, so it only suits small changes:
+# the asserts below stop it before an end runs into the power switch or MODE button hole.
+# Writes Controller_<width>x<depth>.stl next to SRC. If you don't have my Inventor
+# folder, point SRC at inventor/Controller.stl in this repo.
 import sys, struct, numpy as np
 
 SRC = r"E:\InventorProjects\Fireworkcontroller\Controller.stl"

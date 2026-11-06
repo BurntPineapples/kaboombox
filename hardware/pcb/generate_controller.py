@@ -2,32 +2,41 @@
 # SPDX-License-Identifier: MIT
 
 """
-Single-board CONTROLLER PCB generator (LCD version, no lid/tray split).
-Run with KiCad's bundled Python:
+Builds the panel (controller) PCB: controller/controller.kicad_pcb.
+Run it with KiCad's own Python, not your normal one:
   "E:\\KiCad\\bin\\python.exe" generate_controller.py
 
-One board: controller/controller.kicad_pcb
+What's on the board:
   - ESP32 38-pin devkit socket
   - screw terminals for: 8 fire buttons, 8 channel LEDs, key switch, mode
     button, link LEDs, 16x2 I2C LCD, 5V power
   - 4x 10k button pull-ups (BTN5-8 are input-only pins)
   - 10x 220R (8 channel LEDs + 2 link LEDs)
-Panel-mount every control in the box lid and run the wires DOWN to this board.
+Panel-mount every control in the box lid and run the wires down to this board.
 
-!!! MEASURE BEFORE ORDERING !!!
-ESP_ROW_SPACING = center-to-center of the ESP32's two pin rows.
-25.4mm (1.0") for most 38-pin devkits; some are 22.86mm (0.9"). Measure yours.
-Board fits a 238 x 159 mm (9-3/8 x 6-1/4 in) box interior with margin.
+Measure before ordering: ESP_ROW_SPACING is the centre-to-centre distance
+between the ESP32's two pin rows. Most 38-pin devkits are 25.4 mm (1.0"),
+some are 22.86 mm (0.9").
+The board fits a 238 x 159 mm (9-3/8 x 6-1/4 in) box interior with margin.
+
+Changing things:
+  - FP_ROOT must point at your KiCad footprint folder.
+  - Positions in build() are mm from the board's top-left corner.
+  - Each pad gets a net name (e.g. "BTN5"). Pads with the same name get
+    connected, so a new wire is just the same name on both ends.
+  - If you move a GPIO in the firmware, change the matching pin in the
+    left/right socket maps below.
+  - Running this wipes the routing. Run route_controller.py afterwards.
 """
 
 import os
 import pcbnew
 
-FP_ROOT = r"E:\KiCad\share\kicad\footprints"
+FP_ROOT = r"E:\KiCad\share\kicad\footprints"   # change to your KiCad install's footprints folder
 OUT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-ESP_ROW_SPACING = 25.4  # mm  <-- MEASURE YOUR ESP32! (25.4 or 22.86)
-ORIGIN_X = 100.0
+ESP_ROW_SPACING = 25.4  # mm, measure your ESP32 (usually 25.4, sometimes 22.86)
+ORIGIN_X = 100.0        # where the board sits on KiCad's page; doesn't affect the board itself
 ORIGIN_Y = 100.0
 
 
@@ -126,7 +135,9 @@ def build():
         h = b.place("MountingHole.pretty", "MountingHole_3.2mm_M3", ref, "M3", x, y)
         h.Reference().SetVisible(False)  # keep tiny hole labels off the board edge
 
-    # ---- ESP32 socket (38-pin devkit, USB toward BOTTOM edge, pin1 top) ----
+    # ESP32 socket (38-pin devkit, USB toward the bottom edge, pin 1 at the top).
+    # left/right map each socket pin to a net. None = pin not used.
+    # Socket pin -> GPIO is in esp_left_lbl / esp_right_lbl just below.
     left = {1: "3V3", 2: None, 3: "BTN7", 4: "BTN8", 5: "BTN5", 6: "BTN6",
             7: "LED7", 8: "LED8", 9: "BTN3", 10: "BTN4", 11: "KEY_ALL",
             12: "BTN2", 13: "LED_FAIL", 14: "GND", 15: "BTN1",
@@ -149,7 +160,7 @@ def build():
     b.label_pads(j2, esp_left_lbl, dx=-3.4, size=0.7)
     b.label_pads(j3, esp_right_lbl, dx=3.4, size=0.7)
 
-    # ---- connectors (each pad silk-labeled with its function) ----
+    # Screw terminals. Every pad gets a silkscreen label with its function.
     btn = {i: "BTN%d" % i for i in range(1, 9)}; btn[9] = "GND"
     btn_fp = b.place(*TB09, "J_BTN", "fire buttons 1-8 +GND", 12, 8, 0, btn)
     b.label_pads(btn_fp, {str(i): "B%d" % i for i in range(1, 9)} | {"9": "GND"},
@@ -181,7 +192,7 @@ def build():
                       {1: "MODE_BTN", 2: "GND"})
     b.label_pads(mode_fp, {"1": "MODE", "2": "GND"}, dy=3.2, size=0.85)
 
-    # ---- resistors: horizontal (rot 0), tidy column; origin=left pad, +10mm ----
+    # Resistors, laid flat in one column. Footprint origin is the left pad; the right pad is 10.16 mm over.
     for i, sig in enumerate(["BTN5", "BTN6", "BTN7", "BTN8"]):
         b.place(*RES, "R_P%d" % (i + 1), "10k", 54, 16 + i * 4, 0,
                 {1: sig, 2: "3V3"})
@@ -192,7 +203,7 @@ def build():
         b.place(*RES, "R_C%d" % n, "220", 54, 42 + i * 4, 0,
                 {1: "LED%d" % n, 2: "LED%d_A" % n})
 
-    # ---- silk: title top-middle (gap between J_BTN and J_LCD) ----
+    # Silkscreen title, in the gap between J_BTN and J_LCD
     b.text("FIREWORK", 63, 7, 1.0)
     b.text("CONTROLLER", 63, 12, 1.0)
     b.text("ESP32  (USB v down)", 35, 68, 0.9)
