@@ -45,7 +45,9 @@ reports back, so you can see on the panel which channels are ready before you ar
 - The field box sends status 4 times a second: continuity for each channel, which relays
   are closed, and its uptime. The panel uses that to light the channel LEDs and to work
   out link quality.
-- The two boards are paired by MAC address and only listen to each other.
+- The two boards are paired by MAC address, and every packet is signed with a secret key
+  that only your two boxes have. The field box ignores anything it can't verify,
+  including packets someone recorded earlier and plays back.
 
 ### Key switch
 
@@ -154,11 +156,31 @@ What one complete set uses. The search terms are what to type into Amazon/AliExp
    upload it to the panel ESP32. Open `firmware/firework_field/firework_field.ino` and
    upload it to the field ESP32.
 
+### Your secret key (do this first)
+
+The boxes sign every message with a key only they know, so nobody else can make a fake
+panel that your field box would obey. The sketches won't compile until you make one.
+
+1. Copy `secrets.example.h` to `secrets.h` in `firmware/firework_controller/`.
+2. Make a random key. In a terminal:
+
+   ```bash
+   python -c "import secrets; print(', '.join('0x%02X' % b for b in secrets.token_bytes(32)))"
+   ```
+
+   Paste the 32 numbers into `secrets.h` and set `KABOOM_KEY_IS_PLACEHOLDER` to `0`.
+3. Copy that same `secrets.h` into `firmware/firework_field/`. Both boxes need the
+   **same** key.
+
+Keep `secrets.h` to yourself. It's in `.gitignore`, so it won't be uploaded if you fork
+this repo. If the two boxes have different keys they won't link, and the LCD says
+`FW/SECRET DIFFER`.
+
 ### Pairing the two boards
 
 The MAC addresses in the sketches are for my boards. Yours will be different.
 
-1. Flash both sketches as they are and open **Serial Monitor at 115200 baud**.
+1. Flash both sketches (with your `secrets.h`) and open **Serial Monitor at 115200 baud**.
 2. Each board prints its own MAC at boot (`MY MAC - paste into ...`).
 3. Put the **field** board's MAC into `FIELD_MAC` in `firework_controller.ino`.
 4. Put the **controller** board's MAC into `CONTROLLER_MAC` in `firework_field.ino`.
@@ -181,7 +203,8 @@ Everything else (channel types, pulse lengths, continuity check, link-lost hold,
 saved sequence) is set from the menu on the panel and stored in flash.
 
 If you change the message format, bump `PROTO_VER` in both sketches. Boards with a
-different `PROTO_VER` ignore each other instead of misfiring.
+different `PROTO_VER` ignore each other instead of misfiring. Version 3 (`0xA3`) added
+the signing, so a v2 box won't talk to a v3 box: flash both.
 
 ## Wiring
 

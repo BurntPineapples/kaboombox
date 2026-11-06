@@ -10,12 +10,16 @@
  *  Board: "ESP32 Dev Module"
  *  Library: "LiquidCrystal I2C" by Frank de Brabander
  *
- *  Before your first flash, put your field board's MAC in FIELD_MAC below.
+ *  Before your first flash, put your field board's MAC in FIELD_MAC below,
+ *  and make a secrets.h with your signing key (see secrets.example.h; it must
+ *  be the same file in both sketch folders).
  *  Most other things you'd want to change are in the block of #defines and
  *  tables right under the pin map, each with a note on what it does.
  *
- *  v2: flash the field box with its v2 sketch too. v1 and v2 boxes
- *  ignore each other (no link, nothing fires) - they never misfire.
+ *  v3: flash the field box with its v3 sketch too, with the SAME secrets.h.
+ *  Boxes on different versions, or with different keys, ignore each other
+ *  (no link, nothing fires) - they never misfire. The LCD shows
+ *  "FW/SECRET DIFFER" when that happens.
  *
  *  16x2 I2C LCD: GND, VCC->5V, SDA->GPIO16, SCL->GPIO5.
  *  Blank screen: turn the contrast pot, or change LCD_ADDR to 0x3F.
@@ -56,8 +60,14 @@
 #include <Wire.h>
 #include <Preferences.h>
 #include <LiquidCrystal_I2C.h>
+#include <stddef.h>
+#include "mbedtls/md.h"
+#include "secrets.h"   // your private signing key. If this line errors: copy secrets.example.h to secrets.h
+#if KABOOM_KEY_IS_PLACEHOLDER
+#error "secrets.h still has the placeholder key. Put your own random key in it (see secrets.example.h)."
+#endif
 
-#define FW_VERSION     "2.0"   // shown on menu page 8 (Info). Bump it when you change the sketch.
+#define FW_VERSION     "3.0"   // shown on menu page 8 (Info). Bump it when you change the sketch.
 #define USE_LONG_RANGE 0   // 1 = ESP32 long-range radio (more range, lower speed). Set the SAME in the field sketch.
 
 // The field box's MAC address. The field board prints its own MAC on the
@@ -84,7 +94,8 @@ LiquidCrystal_I2C lcd(LCD_ADDR, 16, 2);
 // Radio protocol. Everything from here down to the Msg struct must match the
 // field sketch exactly. If you change any of it, change PROTO_VER in BOTH
 // sketches so an old box ignores the new one instead of misreading it.
-#define PROTO_VER    0xA2   // first byte of every packet; not 1-5 so a v1 box can't mistake it for a message type
+#define PROTO_VER    0xA3   // first byte of every packet; not 1-5 so a v1 box can't mistake it for a message type.
+                            // 0xA3 = v3, signed messages. v2 (0xA2) boxes ignore v3 ones and vice versa.
 #define NO_HEARTBEAT 0xFF   // STATUS.mode when the field isn't hearing us
 #define HOLD_FOREVER 0xFFFF
 enum Mode : uint8_t { MODE_DISARMED = 0, MODE_ARMED = 1, MODE_ARMED_ALL = 2 };
@@ -104,7 +115,27 @@ typedef struct __attribute__((packed)) {
   uint16_t holdS;      // HEARTBEAT: link-lost hold for ON/OFF channels (HOLD_FOREVER = until link back)
   uint32_t uptimeS;    // STATUS: field uptime
   uint16_t pulseMs[8]; // FIRE: pulse length per channel
+  uint32_t fieldNonce; // random number the field picks for each session; we echo it back
+  uint32_t ctrlNonce;  // random number we pick at boot
+  uint32_t counter;    // goes up by one with every message the sender sends
+  uint8_t  tag[16];    // signature: HMAC-SHA256 of everything above with KABOOM_KEY, first 16 bytes
 } Msg;
+
+// Message signing (the same two functions are in the field sketch).
+// The field box only acts on packets whose tag checks out with your KABOOM_KEY.
+void makeTag(const Msg &m, uint8_t out[16]) {
+  uint8_t full[32];
+  mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), KABOOM_KEY, sizeof(KABOOM_KEY),
+                  (const uint8_t *)&m, offsetof(Msg, tag), full);
+  memcpy(out, full, 16);
+}
+
+bool tagOk(const Msg &m) {
+  uint8_t t[16], diff = 0;
+  makeTag(m, t);
+  for (int i = 0; i < 16; i++) diff |= t[i] ^ m.tag[i];   // compare every byte, no early exit
+  return diff == 0;
+}
 
 // Timing, all in milliseconds.
 #define HEARTBEAT_MS   300    // how often the panel tells the field the key position. Keep it well under
@@ -173,6 +204,12 @@ volatile int8_t   rssi = 0;        // 0 = unknown (arduino-esp32 v2 doesn't repo
 volatile bool     fieldRebooted = false;
 volatile bool     pongFlag = false;
 volatile uint32_t pongAtMs = 0;
+
+// Signing state. The field only accepts our packets if they carry its current
+// session number (fieldNonce, learned from its STATUS) and a counter it hasn't seen.
+uint32_t          myNonce = 0;     // picked at boot in setup()
+uint32_t          txCounter = 0;
+volatile uint32_t fieldNonce = 0;  // 0 until the first STATUS arrives; the field ignores us until then
 
 uint8_t  quality = 0;              // % of field STATUS packets received, last 2 s
 uint32_t qualityMs = 0;
@@ -266,6 +303,10 @@ void sendMsg(uint8_t type, uint8_t mask) {
   m.mask = mask;
   if (type == MSG_HEARTBEAT) { m.mask = toggleOn; m.mask2 = holdOn; m.holdS = LINK_HOLD_OPTS[cfg.linkHold]; }
   if (type == MSG_FIRE) for (int c = 0; c < 8; c++) m.pulseMs[c] = cfg.pulseDs[c] * 100;
+  m.fieldNonce = fieldNonce;
+  m.ctrlNonce = myNonce;
+  m.counter = ++txCounter;
+  makeTag(m, m.tag);
   esp_now_send(FIELD_MAC, (uint8_t *)&m, sizeof(m));
 }
 
@@ -285,6 +326,11 @@ void handleRecv(const uint8_t *mac, const uint8_t *data, int len, int8_t sig) {
   if (len != (int)sizeof(Msg) || data[0] != PROTO_VER) { badVerMs = millis(); return; }
   Msg m;
   memcpy(&m, data, sizeof(m));
+  if (!tagOk(m)) { badVerMs = millis(); return; }   // from our field's MAC but a different key
+  // Known limit: STATUS/PONG are signed but not replay-checked here. The worst a replayed
+  // old STATUS can do is give us a stale fieldNonce, so the field drops our packets and
+  // the link goes down (safe: the field disarms). Add a panel-side nonce if that matters.
+  fieldNonce = m.fieldNonce;
   if (m.type == MSG_PONG) {
     pongAtMs = millis();
     pongFlag = true;
@@ -378,7 +424,7 @@ void runCheck() {
     {"link",       isLinkHealthy()},
     {"ping",       lastPingOk},
     {"signal",     quality >= WEAK_LINK_PCT},
-    {"fw version", !verMismatch()},
+    {"fw/secret",  !verMismatch()},    // same firmware version and same secrets.h on both boxes
     {"key wiring", !keyFault},
     {"buttons",    !btnHeld},          // a stuck button
     {"relays",     relayMask == 0},    // we're disarmed, field must have every relay open
@@ -621,7 +667,7 @@ void updateLCD() {
     show("FIRING...", b);
   }
   else if (now < noticeUntil)        show(noticeTitle, noticeText);
-  else if (verMismatch())            show("FW MISMATCH", "flash both boxes");
+  else if (verMismatch())            show("FW/SECRET DIFFER", "flash both boxes");
   else if (!isLinkHealthy())         show("LINK DOWN", toggleOn && cfg.linkHold ? "field holds ON" : "check field box");
   else if (missingCh >= 0)           { snprintf(a, sizeof(a), "CH %d NOT ON", missingCh + 1); show(a, "field no confirm"); }
   else if (mode == MODE_DISARMED)    { snprintf(b, sizeof(b), "Rdy:%d  MODE=menu", ready); show("DISARMED", b); }
@@ -662,6 +708,7 @@ void setup() {
 
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
+  do { myNonce = esp_random(); } while (myNonce == 0);   // after the radio is on, so the random number generator has entropy
 #if USE_LONG_RANGE
   esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_LR);
 #endif

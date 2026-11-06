@@ -50,10 +50,12 @@ manufacturer.
 
 ## 3. Wireless link limitations
 
-The two units talk over ESP-NOW. Packets are **not encrypted or authenticated**. The
-firmware ignores packets from MAC addresses other than the paired unit, but MAC addresses
-can be spoofed, so this filtering is **not** a security measure. Do not rely on the
-wireless link for safety. The physical arming key and the removable firing fuse are the
+The two units talk over ESP-NOW. From firmware v3, every packet is signed with a secret
+key (HMAC-SHA256) and carries a session number and counter, so the field unit ignores
+packets that are forged, altered or replayed. This only works if you make your own random
+key and keep it private. The packets are **not encrypted**: anyone nearby can read them.
+The radio can also be jammed, or simply fail, at any time. The signing has not been
+independently reviewed. Do not rely on the wireless link for safety. The physical arming key and the removable firing fuse are the
 safety devices; the software only adds convenience checks on top of them.
 
 ## 4. Safety features must never be bypassed

@@ -46,3 +46,6 @@ hardware/enclosure/tray.png
 hardware/enclosure/tray_layout.png
 hardware/enclosure/INVENTOR_BUILD.html
 hardware/pcb/*/*.svg
+
+# private signing key for the boxes, never upload
+firmware/*/secrets.h

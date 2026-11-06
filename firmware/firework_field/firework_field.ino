@@ -10,13 +10,17 @@
  *  No extra libraries needed.
  *
  *  Before your first flash, put your panel board's MAC in CONTROLLER_MAC
- *  below. The limits you might want to change (pulse length cap, heartbeat
+ *  below, and make a secrets.h with your signing key (see secrets.example.h).
+ *  The limits you might want to change (pulse length cap, heartbeat
  *  timeout) are in the #defines under the Msg struct.
  *
- *  v2: flash the CONTROLLER with its v2 sketch too. v1 and v2 boxes
- *  ignore each other (no link, nothing fires) - they never misfire.
+ *  v3: flash the CONTROLLER with its v3 sketch too, with the SAME secrets.h.
+ *  Boxes on different versions, or with different keys, ignore each other
+ *  (no link, nothing fires) - they never misfire.
  *
  *  FIRST-TIME PAIRING:
+ *   0. Copy secrets.example.h to secrets.h in BOTH sketch folders and put
+ *      the same random key in both (instructions are in the file).
  *   1. Flash both sketches. Open Serial Monitor at 115200 baud.
  *   2. Each board prints its own MAC address at boot.
  *   3. Paste the CONTROLLER's MAC into CONTROLLER_MAC below, re-flash.
@@ -30,6 +34,9 @@
  *
  *  SAFETY DESIGN:
  *   - Packets from any other MAC, or other firmware version, are ignored.
+ *   - Every packet must be signed with your key from secrets.h and be new
+ *     (session number + counter), so a fake or recorded-and-replayed packet
+ *     can't arm or fire this box.
  *   - Firing requires a fresh heartbeat (<1.5s) saying ARMED / ARMED ALL.
  *   - Key to DISARMED -> every relay opens.
  *   - Link lost -> pulses cut at once, HOLD channels off at once, fire
@@ -52,6 +59,12 @@
 #include <WiFi.h>
 #include <esp_now.h>
 #include <esp_wifi.h>
+#include <stddef.h>
+#include "mbedtls/md.h"
+#include "secrets.h"   // your private signing key. If this line errors: copy secrets.example.h to secrets.h
+#if KABOOM_KEY_IS_PLACEHOLDER
+#error "secrets.h still has the placeholder key. Put your own random key in it (see secrets.example.h)."
+#endif
 
 #define USE_LONG_RANGE 0   // 1 = ESP32 long-range radio (more range, lower speed). Set the SAME in the controller sketch.
 
@@ -68,7 +81,8 @@ const int SENSE_PIN[8] = {36, 39, 34, 35, 4, 17, 18, 19};  // LOW = igniter conn
 
 // Radio protocol. Must match the panel sketch exactly, down to the Msg struct.
 // If you change any of it, change PROTO_VER in BOTH sketches.
-#define PROTO_VER    0xA2   // first byte of every packet; not 1-5 so a v1 box can't mistake it for a message type
+#define PROTO_VER    0xA3   // first byte of every packet; not 1-5 so a v1 box can't mistake it for a message type.
+                            // 0xA3 = v3, signed messages. v2 (0xA2) boxes ignore v3 ones and vice versa.
 #define NO_HEARTBEAT 0xFF   // STATUS.mode when we aren't hearing the controller
 #define HOLD_FOREVER 0xFFFF
 enum Mode : uint8_t { MODE_DISARMED = 0, MODE_ARMED = 1, MODE_ARMED_ALL = 2 };
@@ -88,7 +102,34 @@ typedef struct __attribute__((packed)) {
   uint16_t holdS;      // HEARTBEAT: link-lost hold for ON/OFF channels (HOLD_FOREVER = until link back)
   uint32_t uptimeS;    // STATUS: field uptime
   uint16_t pulseMs[8]; // FIRE: pulse length per channel
+  uint32_t fieldNonce; // random number the field picks for each session; the panel echoes it back
+  uint32_t ctrlNonce;  // random number the panel picks at boot
+  uint32_t counter;    // goes up by one with every message the sender sends
+  uint8_t  tag[16];    // signature: HMAC-SHA256 of everything above with KABOOM_KEY, first 16 bytes
 } Msg;
+
+// Message signing (the same two functions are in the panel sketch).
+// Only a box that has your KABOOM_KEY can make a tag that checks out, so a fake
+// panel can't arm or fire this box, and a changed packet fails the check.
+void makeTag(const Msg &m, uint8_t out[16]) {
+  uint8_t full[32];
+  mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), KABOOM_KEY, sizeof(KABOOM_KEY),
+                  (const uint8_t *)&m, offsetof(Msg, tag), full);
+  memcpy(out, full, 16);
+}
+
+bool tagOk(const Msg &m) {
+  uint8_t t[16], diff = 0;
+  makeTag(m, t);
+  for (int i = 0; i < 16; i++) diff |= t[i] ^ m.tag[i];   // compare every byte, no early exit
+  return diff == 0;
+}
+
+uint32_t newNonce() {   // hardware random number, never 0 (0 means "not known yet")
+  uint32_t n;
+  do { n = esp_random(); } while (n == 0);
+  return n;
+}
 
 // Limits, in milliseconds. These are enforced here on the field box, whatever the panel asks for.
 #define MAX_PULSE_MS      10000 // hard cap on any one pulse, whatever the controller asks
@@ -109,6 +150,13 @@ volatile uint8_t  holdMask = 0;      // HOLD channels the controller wants on
 volatile uint16_t linkHoldS = 0;
 volatile bool     pongRequested = false;
 
+// Replay protection. A recorded packet is useless later: it carries an old
+// session number (fieldNonce) or a counter we've already seen.
+volatile uint32_t sessionNonce = 0;     // set in setup(), changed whenever the panel reboots
+volatile uint32_t knownCtrlNonce = 0;   // the panel boot we're talking to
+volatile uint32_t lastCtrlCounter = 0;  // highest counter accepted from that boot
+uint32_t txCounter = 0;
+
 uint8_t  firedMask = 0;
 uint8_t  lastContinuity = 0xFF; // impossible value forces first print
 uint8_t  lastRelays = 0;
@@ -126,6 +174,9 @@ void reply(uint8_t type, uint8_t mode, uint8_t cont, uint8_t relays) {
   m.mask2 = firedMask;
   m.mask3 = relays;
   m.uptimeS = millis() / 1000;
+  m.fieldNonce = sessionNonce;
+  m.counter = ++txCounter;
+  makeTag(m, m.tag);
   esp_now_send(CONTROLLER_MAC, (uint8_t *)&m, sizeof(m));
 }
 
@@ -134,6 +185,18 @@ void handleRecv(const uint8_t *mac, const uint8_t *data, int len) {
   if (len != (int)sizeof(Msg) || data[0] != PROTO_VER) return; // other firmware ignored
   Msg m;
   memcpy(&m, data, sizeof(m));
+
+  // Nothing below runs unless the packet is signed with our key and is new.
+  if (!tagOk(m)) return;                        // wrong key, or not from our panel
+  if (m.fieldNonce != sessionNonce) return;     // made for an earlier session: stale or replayed
+  if (m.ctrlNonce != knownCtrlNonce) {          // the panel has (re)booted: start a fresh session.
+    knownCtrlNonce = m.ctrlNonce;               // Changing sessionNonce makes anything recorded
+    lastCtrlCounter = m.counter;                // before now useless. This packet is not acted on;
+    sessionNonce = newNonce();                  // the panel picks up the new number from our next
+    return;                                     // STATUS, about 250 ms later.
+  }
+  if (m.counter <= lastCtrlCounter) return;     // already seen: a replay
+  lastCtrlCounter = m.counter;
 
   // every controller message doubles as a heartbeat
   ctrlMode = m.mode;
@@ -187,8 +250,9 @@ void setup() {
 #if USE_LONG_RANGE
   esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_LR);
 #endif
+  sessionNonce = newNonce();   // after the radio is on, so the hardware random number generator has entropy
   Serial.println();
-  Serial.println("=== FIELD UNIT v2 (relay box) ===");
+  Serial.println("=== FIELD UNIT v3 (relay box) ===");
   Serial.print("MY MAC - paste into FIELD_MAC in the controller sketch: ");
   Serial.println(WiFi.macAddress());
 
