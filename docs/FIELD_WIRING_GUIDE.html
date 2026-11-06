@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Field Box — Power &amp; Clip Wiring</title>
+<title>Field Box: Power &amp; Clip Wiring</title>
 <style>
   :root{
     --ink:#14161c;--muted:#5b6472;--line:#c9ced8;--panel:#f4f6fa;
@@ -34,8 +34,8 @@
 <body>
 <div class="wrap">
 
-<h1>Field box — power &amp; alligator-clip wiring</h1>
-<p class="sub">The one that trips people up: the <span class="neg">negative</span> uses a Wago, the <span class="pos">positive (12V)</span> does <b>not</b> — it hops across the relay COM screws instead.</p>
+<h1>Field box: power &amp; alligator-clip wiring</h1>
+<p class="sub">The one that trips people up: the <span class="neg">negative</span> uses a Wago, the <span class="pos">positive (12V)</span> does <b>not</b>; it hops across the relay COM screws instead.</p>
 
 <div class="ok">
 <b>The big idea:</b> the 12&nbsp;V goes <span class="pos">OUT</span> through the relays to the firework and comes <span class="neg">BACK</span> through one shared Wago. So you have <b>one Wago (the negative)</b> collecting all the returns, and the <b>positive spread across the 8 relay COM screws</b> by little jumpers. Each firework sits in the middle, held by two alligator clips.
@@ -99,7 +99,7 @@
 </div>
 <p class="sub">Follow the red line: <span class="pos">battery + → fuse → relay COM → NO → clip A → steel wool</span>. Then the black line: <span class="neg">steel wool → clip B → NEG Wago → battery −</span>. When the relay clicks, that loop completes and the strand burns.</p>
 
-<h2>1. The NEGATIVE Wago — what goes in (you already did this)</h2>
+<h2>1. The NEGATIVE Wago: what goes in (you already did this)</h2>
 <p class="sub">One shared junction. A 5-slot Wago holds 5 wires; chain a second one for the rest.</p>
 <table>
 <tr><th>Into the NEG Wago</th><th>How many</th></tr>
@@ -109,8 +109,8 @@
 <tr><td colspan="2" style="color:var(--muted)">= 10 wires total → two 5-slot Wagos bridged with one short jumper</td></tr>
 </table>
 
-<h2>2. The POSITIVE — no Wago, it hops across the COM screws</h2>
-<p class="sub">The 12V positive is <b>not</b> collected in a Wago — it's fed to relay COM1 and then daisy-chained screw-to-screw across all 8 COMs.</p>
+<h2>2. The POSITIVE: no Wago, it hops across the COM screws</h2>
+<p class="sub">The 12V positive is <b>not</b> collected in a Wago. It's fed to relay COM1 and then daisy-chained screw-to-screw across all 8 COMs.</p>
 <div class="card">
 <svg viewBox="0 0 900 150" role="img" xmlns="http://www.w3.org/2000/svg">
 <title>COM daisy chain</title>
@@ -130,7 +130,7 @@
 <line x1="456" y1="75" x2="496" y2="75" stroke="#c0261a" stroke-width="3"/>
 <rect x="496" y="60" width="48" height="30" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="1.4"/><text class="ts" x="520" y="79" text-anchor="middle">COM8</text>
 </g>
-<text class="ts" x="300" y="120" text-anchor="middle">7 short jumpers, screw to screw — now all 8 COMs carry the fused 12V</text>
+<text class="ts" x="300" y="120" text-anchor="middle">7 short jumpers, screw to screw, now all 8 COMs carry the fused 12V</text>
 </svg>
 </div>
 <table>
@@ -138,9 +138,9 @@
 <tr><td>1</td><td>Battery <span class="pos">+</span> → <b>fuse</b> → relay <b>COM1</b> screw</td></tr>
 <tr><td>2</td><td>Short 20AWG jumper: <b>COM1 → COM2</b></td></tr>
 <tr><td>3</td><td>Repeat: COM2→COM3, COM3→COM4 … COM7→COM8 (7 jumpers total)</td></tr>
-<tr><td>4</td><td>Middle COM screws hold <b>two wires</b> (jumper in + jumper out) — twist the two stripped ends together before clamping so both stay put</td></tr>
+<tr><td>4</td><td>Middle COM screws hold <b>two wires</b> (jumper in + jumper out). Twist the two stripped ends together before clamping so both stay put</td></tr>
 </table>
-<p class="sub"><b>Would a Wago work for the positive too?</b> Yes — instead of the daisy chain you can run battery+ → fuse → a second Wago, then one wire from that Wago to each COM. Same result, just more wire. The daisy chain uses fewer parts, so most people do that.</p>
+<p class="sub"><b>Would a Wago work for the positive too?</b> Yes. Instead of the daisy chain you can run battery+ → fuse → a second Wago, then one wire from that Wago to each COM. Same result, just more wire. The daisy chain uses fewer parts, so most people do that.</p>
 
 <h2>3. Where the alligator clips go</h2>
 <p class="sub"><b>Two clips per firework</b>, one on each end of the steel-wool strand.</p>
@@ -149,18 +149,18 @@
 <tr><td><span class="clip">Clip A</span> (hot)</td><td>relay <b>NO</b> of that channel</td><td>one end of the steel wool</td></tr>
 <tr><td><span class="clip">Clip B</span> (return)</td><td>the <b>NEG Wago</b></td><td>the other end of the steel wool</td></tr>
 </table>
-<p class="sub">So each channel needs a lead from its <span class="pos">NO</span> ending in clip A, and a lead from the <span class="neg">NEG Wago</span> ending in clip B. The strand bridges the two clips — that's what the relay switches on and the sense circuit reads.</p>
+<p class="sub">So each channel needs a lead from its <span class="pos">NO</span> ending in clip A, and a lead from the <span class="neg">NEG Wago</span> ending in clip B. The strand bridges the two clips; that's what the relay switches on and the sense circuit reads.</p>
 
-<h2>Quick reference — the 3 positives on this box</h2>
+<h2>Quick reference: the 3 positives on this box</h2>
 <table>
 <tr><th>Positive</th><th>Volts</th><th>Feeds</th><th>Wago?</th></tr>
-<tr><td class="pos">Firing 12V</td><td>12</td><td>relay COM daisy chain → NO → fireworks</td><td>No — daisy chain</td></tr>
-<tr><td>Relay VCC</td><td>5</td><td>relay module coils (one wire from ESP32 VIN)</td><td>No — single wire</td></tr>
+<tr><td class="pos">Firing 12V</td><td>12</td><td>relay COM daisy chain → NO → fireworks</td><td>No, daisy chain</td></tr>
+<tr><td>Relay VCC</td><td>5</td><td>relay module coils (one wire from ESP32 VIN)</td><td>No, single wire</td></tr>
 <tr><td>Sense 3V3</td><td>3.3</td><td>100k pull-ups on channels 1–4</td><td>No</td></tr>
 </table>
 
 <div class="note">
-<b>Fuse safety:</b> the fuse is the master kill. Leave it <b>out</b> of the holder while wiring and clipping strands — with no fuse, the whole 12V positive chain is dead. Insert it only when everyone is clear and you're ready to fire, then pull it right back out.
+<b>Fuse safety:</b> the fuse is the master kill. Leave it <b>out</b> of the holder while wiring and clipping strands. With no fuse, the whole 12V positive chain is dead. Insert it only when everyone is clear and you're ready to fire, then pull it right back out.
 </div>
 
 </div>
