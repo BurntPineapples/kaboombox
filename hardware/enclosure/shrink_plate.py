@@ -9,7 +9,7 @@
 # Needs numpy. Works straight on the STL triangles, so it only suits small changes:
 # the asserts below stop it before an end runs into the power switch or MODE button hole.
 # Writes Controller_<width>x<depth>.stl next to SRC. If you don't have my Inventor
-# folder, point SRC at inventor/Controller.stl in this repo.
+# folder, point SRC at plate-source/Controller.stl in this repo.
 import sys, struct, numpy as np
 
 SRC = r"E:\InventorProjects\Fireworkcontroller\Controller.stl"

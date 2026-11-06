@@ -81,13 +81,10 @@ firmware/
   firework_field/        field box sketch
 hardware/
   pcb/                   KiCad 10 boards, generator + router scripts, gerber zips
-    archive/             old two-board (tray + lid) controller design, not used anymore
   enclosure/             build123d scripts, STEP/STL files, print/fit test pieces
-    inventor/            Autodesk Inventor parts (.ipt/.ipj) and the plate STLs
-    archive/             earlier OpenSCAD versions
+    plate-source/        the faceplate as drawn in CAD, which the scripts build on
 docs/                    wiring sheets (.html, open in a browser)
   images/                photos and wiring diagrams
-  archive/               outdated sheets from the 7-segment version, don't build from these
 ```
 
 ## Parts list
@@ -285,14 +282,9 @@ Fit tests:
 | [`field_floor_test.stl`](hardware/enclosure/field_floor_test.stl) | Floor outline in the can |
 | [`field_prop_test.stl`](hardware/enclosure/field_prop_test.stl) | Rim and lid grooves of the window frame |
 
-Pieces for CAD, not for printing on their own:
-
-| File | What it is |
-|---|---|
-| `lcd_pod_30.stl` / `lcd_pod_30_placed.stl` | The LCD pod by itself (already joined into `controller_full`) |
-| `lcd_pod_cutter.stl` / `lcd_pod_cutter_placed.stl` | The cut-out the pod needs in a plain plate |
-| `inventor/Controller.stl`, `inventor/Controller_9.200x6.100.stl` | The plate exported from Inventor, before and after `shrink_plate.py` |
-| `archive/*.stl` | Earlier OpenSCAD versions, kept for history |
+Not for printing: `plate-source/Controller.stl` and `plate-source/Controller_9.200x6.100.stl`
+are the faceplate as drawn in CAD, before and after `shrink_plate.py`. The scripts build
+`controller_full` from them.
 
 Every printable part also has a `.step` file for CAD. PETG or ASA hold up better outdoors
 than PLA, which can soften in a hot car or in direct sun.
@@ -305,12 +297,10 @@ cd hardware/enclosure
 python legs_step.py
 ```
 
-A few scripts copy their output into my Inventor folder (`E:\InventorProjects\...`)
+A few scripts copy their output into my CAD folder (`E:\InventorProjects\...`)
 or read the plate STL from there. If you don't have that folder, delete those
-`shutil.copy` lines and point `SRC` at `inventor/Controller_9.200x6.100.stl`.
-
-The base plate was modelled in Autodesk Inventor. The `.ipt` files are in
-`hardware/enclosure/inventor/` if you have Inventor; everyone else can use the STEP/STL files.
+`shutil.copy` lines and point `SRC` at the matching file in `plate-source/`.
+To rebuild the faceplate, run `lcd_pod_step.py` first, then `plate_test.py`.
 
 ## Docs
 
@@ -319,9 +309,6 @@ Open these in a browser:
 - [`docs/CONTROLLER_WIRING.html`](docs/CONTROLLER_WIRING.html): panel box wiring, step by step
 - [`docs/FIELD_WIRING_GUIDE.html`](docs/FIELD_WIRING_GUIDE.html): field box power and clip wiring
 - [`docs/SCHEMATIC_field.html`](docs/SCHEMATIC_field.html): field box schematic
-- [`hardware/enclosure/INVENTOR_BUILD.html`](hardware/enclosure/INVENTOR_BUILD.html): faceplate build sheet
-
-Anything in `docs/archive/` is from the old 7-segment version and has wrong pins.
 
 ## Before every use
 
@@ -335,7 +322,7 @@ Anything in `docs/archive/` is from the old 7-segment version and has wrong pins
 ## License
 
 - Firmware and scripts: [MIT](LICENSE)
-- Hardware designs (PCB, enclosure, Inventor files) and docs:
+- Hardware designs (PCB, enclosure, STL/STEP files) and docs:
   [CERN-OHL-P v2](LICENSE-HARDWARE)
 
 Both come with no warranty. See [DISCLAIMER.md](DISCLAIMER.md) as well. By using

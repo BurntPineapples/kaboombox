@@ -86,9 +86,8 @@ By using anything in this repository you accept that **you alone** are responsib
   before every use;
 - the safety of yourself, every person present, animals and property.
 
-The documentation may contain errors, omissions or outdated information. Files under
-`archive/` folders are known to be out of date. Component values, pin assignments and
-board layouts may be wrong. Verify everything yourself.
+The documentation may contain errors, omissions or outdated information. Component
+values, pin assignments and board layouts may be wrong. Verify everything yourself.
 
 ## 6. No warranty
 

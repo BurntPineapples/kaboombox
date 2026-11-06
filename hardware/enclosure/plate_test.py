@@ -8,7 +8,7 @@
 # Run: python plate_test.py   (needs: pip install build123d numpy)
 # Run lcd_pod_step.py first; this script imports its *_placed.step files.
 # SRC is the plate exported from Inventor. If you don't have my Inventor folder,
-# point it at inventor/Controller_9.200x6.100.stl in this repo, and delete the
+# point it at plate-source/Controller_9.200x6.100.stl in this repo, and delete the
 # shutil.copy lines.
 import struct, shutil, numpy as np
 from build123d import *

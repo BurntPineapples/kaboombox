@@ -32,3 +32,17 @@ desktop.ini
 # local-only tools
 hardware/enclosure/parts_bay.html
 docs/make_wiring.py
+
+# kept on my PC, not published
+docs/archive/
+hardware/enclosure/archive/
+hardware/pcb/archive/
+hardware/enclosure/inventor/
+*.ipt
+*.ipj
+hardware/enclosure/lcd_pod_30*
+hardware/enclosure/lcd_pod_cutter*
+hardware/enclosure/tray.png
+hardware/enclosure/tray_layout.png
+hardware/enclosure/INVENTOR_BUILD.html
+hardware/pcb/*/*.svg
