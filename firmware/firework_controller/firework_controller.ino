@@ -703,7 +703,7 @@ void setup() {
 void loop() {
   uint32_t now = millis();
 
-  // ---- key ----
+  // Key switch: work out the mode. Both contacts closed at once is a wiring fault, stay disarmed.
   bool kArmed = digitalRead(PIN_KEY_ARMED);
   bool kAll   = digitalRead(PIN_KEY_ALL);
   keyFault = kArmed && kAll;   // both contacts closed = wiring short: stay disarmed
@@ -724,7 +724,7 @@ void loop() {
     Serial.println("PROGRAM cancelled (left ARMED)");
   }
 
-  // ---- radio: heartbeat, constant ping, link quality ----
+  // Radio: heartbeat, constant ping, link quality
   if (now - lastHeartbeat >= HEARTBEAT_MS) sendHeartbeat();
   if (pingPending) {
     if (pongFlag) {
@@ -753,7 +753,7 @@ void loop() {
     notice("FIELD REBOOTED", "power glitch?");
   }
 
-  // ---- system check: does the field confirm the ON/OFF + HOLD relays? ----
+  // Does the field confirm the ON/OFF and HOLD relays we asked for?
   uint8_t missing = (toggleOn | holdOn) & ~relayMask;
   if (!linkHealthy || !missing) mismatchSince = 0;
   else if (!mismatchSince) mismatchSince = now;
@@ -761,7 +761,7 @@ void loop() {
 
   if (checkState == 1 && now - checkStartMs >= CHECK_MS && !pingPending) runCheck();
 
-  // ---- buttons ----
+  // Buttons (debounced; see DEBOUNCE_MS and HOLD_MS)
   for (int i = 0; i < 8; i++) {
     bool raw = (digitalRead(BTN_PIN[i]) == LOW);
     if (raw != btnRaw[i]) { btnRaw[i] = raw; btnRawMs[i] = now; }
@@ -783,7 +783,7 @@ void loop() {
     onModeHold();
   }
 
-  // ---- ARMED ALL countdown ----
+  // ARMED ALL countdown. Turning the key, losing the link or losing every ready channel aborts it.
   if (cdActive) {
     uint8_t stillReady = cdMask & fireAllMask();
     if (mode != cdStartMode)       { cdActive = false; Serial.println("COUNTDOWN ABORTED: key changed"); }
@@ -803,7 +803,7 @@ void loop() {
     }
   }
 
-  // ---- PROGRAM sequence ----
+  // PROGRAM sequence. Leaving ARMED or losing the link aborts it.
   if (seqRunning) {
     if (mode != MODE_ARMED || !linkHealthy) {
       seqRunning = false; Serial.println("SEQUENCE ABORTED");
@@ -821,7 +821,7 @@ void loop() {
     }
   }
 
-  // ---- LEDs ----
+  // LEDs
   for (int i = 0; i < 8; i++) {
     bool on;
     if (inInput)                    on = btnStable[i];
