@@ -1,0 +1,30 @@
+# KiCad
+*-backups/
+*.lck
+fp-info-cache
+*.kicad_prl
+_autosave-*
+\#auto_saved_files\#
+.history/
+# freerouting intermediates (route_*.py regenerates them)
+*.dsn
+*.ses
+*.log
+*.jar
+logs/
+drc*.json
+# loose gerber folders - the zipped gerbers are committed instead
+gerber/
+gerbers/
+
+# Python
+__pycache__/
+*.pyc
+
+# Inventor
+OldVersions/
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store

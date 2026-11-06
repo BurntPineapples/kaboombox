@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Field Box — Power &amp; Clip Wiring</title>
+<style>
+  :root{
+    --ink:#14161c;--muted:#5b6472;--line:#c9ced8;--panel:#f4f6fa;
+    --red:#c0261a;--redbg:#fdecea;--grn:#15803d;--grnbg:#e7f6ec;
+    --amber:#b45309;--amberbg:#fef3c7;--blue:#1d4ed8;
+  }
+  *{box-sizing:border-box}
+  body{font-family:"Segoe UI",Arial,sans-serif;color:var(--ink);margin:0;background:#eef1f5;font-size:15px;line-height:1.55}
+  .wrap{max-width:960px;margin:0 auto;padding:24px 30px 70px;background:#fff}
+  h1{font-size:26px;margin:0 0 4px}
+  h2{font-size:20px;margin:32px 0 8px;padding-bottom:5px;border-bottom:2px solid var(--line)}
+  .sub{color:var(--muted);margin:0 0 16px}
+  table{border-collapse:collapse;width:100%;margin:10px 0 18px;font-size:14px}
+  th,td{border:1px solid var(--line);padding:7px 11px;text-align:left;vertical-align:top}
+  th{background:var(--panel)}
+  code{font-family:Consolas,monospace;font-weight:700}
+  .pos{color:var(--red);font-weight:700}
+  .neg{color:var(--ink);font-weight:700}
+  .clip{color:var(--amber);font-weight:700}
+  .card{border:1px solid var(--line);border-radius:12px;padding:4px 18px 8px;margin:14px 0;background:#fbfcfe}
+  .note{border-left:5px solid var(--red);background:var(--redbg);padding:11px 15px;border-radius:6px;margin:14px 0}
+  .ok{border-left:5px solid var(--grn);background:var(--grnbg);padding:11px 15px;border-radius:6px;margin:14px 0}
+  svg{width:100%;height:auto;display:block;margin:6px 0}
+  .t{font:600 13px "Segoe UI",Arial;fill:var(--ink)}
+  .ts{font:12px "Segoe UI",Arial;fill:var(--muted)}
+  .tw{font:700 13px "Segoe UI",Arial;fill:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Field box — power &amp; alligator-clip wiring</h1>
+<p class="sub">The one that trips people up: the <span class="neg">negative</span> uses a Wago, the <span class="pos">positive (12V)</span> does <b>not</b> — it hops across the relay COM screws instead.</p>
+
+<div class="ok">
+<b>The big idea:</b> the 12&nbsp;V goes <span class="pos">OUT</span> through the relays to the firework and comes <span class="neg">BACK</span> through one shared Wago. So you have <b>one Wago (the negative)</b> collecting all the returns, and the <b>positive spread across the 8 relay COM screws</b> by little jumpers. Each firework sits in the middle, held by two alligator clips.
+</div>
+
+<h2>The whole loop, one channel</h2>
+<div class="card">
+<svg viewBox="0 0 900 300" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>One firing channel loop</title>
+<!-- positive path (red) top -->
+<rect x="20" y="40" width="90" height="46" rx="6" fill="#fdecea" stroke="#c0261a" stroke-width="1.6"/>
+<text class="t" x="65" y="60" text-anchor="middle">12V SLA</text>
+<text class="ts" x="65" y="76" text-anchor="middle">+  and  −</text>
+
+<line x1="110" y1="52" x2="150" y2="52" stroke="#c0261a" stroke-width="3"/>
+<rect x="150" y="40" width="70" height="24" rx="4" fill="#fdecea" stroke="#c0261a" stroke-width="1.6"/>
+<text class="ts" x="185" y="56" text-anchor="middle">10A fuse</text>
+<line x1="220" y1="52" x2="270" y2="52" stroke="#c0261a" stroke-width="3"/>
+
+<rect x="270" y="30" width="150" height="90" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="1.6"/>
+<text class="t" x="345" y="50" text-anchor="middle">relay (1 of 8)</text>
+<text class="ts" x="345" y="70" text-anchor="middle">COM ← 12V in</text>
+<text class="ts" x="345" y="88" text-anchor="middle">NO → switched out</text>
+<text class="ts" x="345" y="106" text-anchor="middle">closes 500ms on fire</text>
+<line x1="345" y1="30" x2="345" y2="20" stroke="#c0261a" stroke-width="3"/><text class="ts" x="352" y="20" fill="#c0261a">COM</text>
+
+<line x1="420" y1="95" x2="470" y2="95" stroke="#c0261a" stroke-width="3"/>
+<text class="ts" x="445" y="88" text-anchor="middle" fill="#c0261a">NO</text>
+
+<!-- clip A -->
+<polygon points="470,86 486,90 470,94 486,98 470,104 490,95" fill="#fde68a" stroke="#b45309" stroke-width="1.4"/>
+<text class="clip" x="478" y="122" text-anchor="middle" font-size="11">clip A</text>
+
+<!-- steel wool -->
+<line x1="490" y1="95" x2="520" y2="95" stroke="#111" stroke-width="2"/>
+<path d="M520 95 l6 -7 l10 14 l10 -14 l10 14 l10 -14 l6 7" fill="none" stroke="#8a6d3b" stroke-width="2.4"/>
+<text class="t" x="565" y="80" text-anchor="middle" fill="#8a6d3b">steel wool</text>
+<text class="ts" x="565" y="120" text-anchor="middle">the firework igniter</text>
+<line x1="578" y1="95" x2="600" y2="95" stroke="#111" stroke-width="2"/>
+
+<!-- clip B -->
+<polygon points="600,86 616,90 600,94 616,98 600,104 620,95" fill="#fde68a" stroke="#b45309" stroke-width="1.4"/>
+<text class="clip" x="608" y="122" text-anchor="middle" font-size="11">clip B</text>
+
+<!-- return path (black) -->
+<line x1="620" y1="95" x2="700" y2="95" stroke="#111" stroke-width="3"/>
+<line x1="700" y1="95" x2="700" y2="210" stroke="#111" stroke-width="3"/>
+<rect x="620" y="210" width="160" height="52" rx="6" fill="#eef1f5" stroke="#111" stroke-width="1.6"/>
+<text class="t" x="700" y="232" text-anchor="middle">NEG bus (Wago)</text>
+<text class="ts" x="700" y="250" text-anchor="middle">all returns + battery − + ESP32 GND</text>
+<line x1="700" y1="210" x2="700" y2="203" stroke="#111" stroke-width="3"/>
+
+<!-- battery - back -->
+<line x1="65" y1="86" x2="65" y2="236" stroke="#111" stroke-width="3"/>
+<line x1="65" y1="236" x2="620" y2="236" stroke="#111" stroke-width="3"/>
+<text class="ts" x="330" y="230" text-anchor="middle">battery − ties into the same Wago</text>
+
+<text class="t" x="20" y="290" fill="#c0261a">red = 12V positive (out through the relay)</text>
+<text class="t" x="470" y="290" fill="#111">black = return (back through the Wago)</text>
+</svg>
+</div>
+<p class="sub">Follow the red line: <span class="pos">battery + → fuse → relay COM → NO → clip A → steel wool</span>. Then the black line: <span class="neg">steel wool → clip B → NEG Wago → battery −</span>. When the relay clicks, that loop completes and the strand burns.</p>
+
+<h2>1. The NEGATIVE Wago — what goes in (you already did this)</h2>
+<p class="sub">One shared junction. A 5-slot Wago holds 5 wires; chain a second one for the rest.</p>
+<table>
+<tr><th>Into the NEG Wago</th><th>How many</th></tr>
+<tr><td>Battery <span class="neg">−</span> lead</td><td>1</td></tr>
+<tr><td><span class="clip">Clip B</span> return from each channel (steel-wool far end)</td><td>8</td></tr>
+<tr><td>ESP32 <span class="neg">GND</span> wire</td><td>1</td></tr>
+<tr><td colspan="2" style="color:var(--muted)">= 10 wires total → two 5-slot Wagos bridged with one short jumper</td></tr>
+</table>
+
+<h2>2. The POSITIVE — no Wago, it hops across the COM screws</h2>
+<p class="sub">The 12V positive is <b>not</b> collected in a Wago — it's fed to relay COM1 and then daisy-chained screw-to-screw across all 8 COMs.</p>
+<div class="card">
+<svg viewBox="0 0 900 150" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>COM daisy chain</title>
+<rect x="20" y="55" width="80" height="40" rx="6" fill="#fdecea" stroke="#c0261a" stroke-width="1.6"/>
+<text class="ts" x="60" y="72" text-anchor="middle">battery +</text>
+<text class="ts" x="60" y="87" text-anchor="middle">→ fuse</text>
+<line x1="100" y1="75" x2="140" y2="75" stroke="#c0261a" stroke-width="3"/>
+<!-- 8 COM terminals -->
+<g>
+<rect x="140" y="60" width="48" height="30" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="1.4"/><text class="ts" x="164" y="79" text-anchor="middle">COM1</text>
+<line x1="188" y1="75" x2="228" y2="75" stroke="#c0261a" stroke-width="3"/>
+<rect x="228" y="60" width="48" height="30" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="1.4"/><text class="ts" x="252" y="79" text-anchor="middle">COM2</text>
+<line x1="276" y1="75" x2="316" y2="75" stroke="#c0261a" stroke-width="3"/>
+<rect x="316" y="60" width="48" height="30" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="1.4"/><text class="ts" x="340" y="79" text-anchor="middle">COM3</text>
+<line x1="364" y1="75" x2="404" y2="75" stroke="#c0261a" stroke-width="3"/>
+<text class="ts" x="430" y="79" text-anchor="middle">…</text>
+<line x1="456" y1="75" x2="496" y2="75" stroke="#c0261a" stroke-width="3"/>
+<rect x="496" y="60" width="48" height="30" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="1.4"/><text class="ts" x="520" y="79" text-anchor="middle">COM8</text>
+</g>
+<text class="ts" x="300" y="120" text-anchor="middle">7 short jumpers, screw to screw — now all 8 COMs carry the fused 12V</text>
+</svg>
+</div>
+<table>
+<tr><th>Step</th><th>Wire</th></tr>
+<tr><td>1</td><td>Battery <span class="pos">+</span> → <b>fuse</b> → relay <b>COM1</b> screw</td></tr>
+<tr><td>2</td><td>Short 20AWG jumper: <b>COM1 → COM2</b></td></tr>
+<tr><td>3</td><td>Repeat: COM2→COM3, COM3→COM4 … COM7→COM8 (7 jumpers total)</td></tr>
+<tr><td>4</td><td>Middle COM screws hold <b>two wires</b> (jumper in + jumper out) — twist the two stripped ends together before clamping so both stay put</td></tr>
+</table>
+<p class="sub"><b>Would a Wago work for the positive too?</b> Yes — instead of the daisy chain you can run battery+ → fuse → a second Wago, then one wire from that Wago to each COM. Same result, just more wire. The daisy chain uses fewer parts, so most people do that.</p>
+
+<h2>3. Where the alligator clips go</h2>
+<p class="sub"><b>Two clips per firework</b>, one on each end of the steel-wool strand.</p>
+<table>
+<tr><th>Clip</th><th>Wired from</th><th>To</th></tr>
+<tr><td><span class="clip">Clip A</span> (hot)</td><td>relay <b>NO</b> of that channel</td><td>one end of the steel wool</td></tr>
+<tr><td><span class="clip">Clip B</span> (return)</td><td>the <b>NEG Wago</b></td><td>the other end of the steel wool</td></tr>
+</table>
+<p class="sub">So each channel needs a lead from its <span class="pos">NO</span> ending in clip A, and a lead from the <span class="neg">NEG Wago</span> ending in clip B. The strand bridges the two clips — that's what the relay switches on and the sense circuit reads.</p>
+
+<h2>Quick reference — the 3 positives on this box</h2>
+<table>
+<tr><th>Positive</th><th>Volts</th><th>Feeds</th><th>Wago?</th></tr>
+<tr><td class="pos">Firing 12V</td><td>12</td><td>relay COM daisy chain → NO → fireworks</td><td>No — daisy chain</td></tr>
+<tr><td>Relay VCC</td><td>5</td><td>relay module coils (one wire from ESP32 VIN)</td><td>No — single wire</td></tr>
+<tr><td>Sense 3V3</td><td>3.3</td><td>100k pull-ups on channels 1–4</td><td>No</td></tr>
+</table>
+
+<div class="note">
+<b>Fuse safety:</b> the fuse is the master kill. Leave it <b>out</b> of the holder while wiring and clipping strands — with no fuse, the whole 12V positive chain is dead. Insert it only when everyone is clear and you're ready to fire, then pull it right back out.
+</div>
+
+</div>
+</body>
+</html>

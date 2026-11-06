@@ -1,0 +1,2 @@
+# store every file byte-for-byte (CAD/STEP/KiCad files must not get line-ending rewrites)
+* -text

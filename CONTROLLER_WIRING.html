@@ -1,0 +1,335 @@
+<title>Controller Rewire Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: one bench-sheet column; maps first, then a tick-off wire list grouped by panel part, a check after each group. */
+:root {  /* always dark, by request */
+  --bg: #111613; --surface: #1a211d; --ink: #e4ebe6; --muted: #9aa69e; --line: #2e3a33; --hole: #3d4a42;
+  --accent: #5fc893; --warn-bg: #2f2612; --warn-ink: #f3cf7a;
+  --w-pwr: #ff6656; --w-gnd: #8b929b; --w-v33: #ffa340; --w-btn: #f0cf35; --w-led: #6a9bff; --w-lcd: #46c482; --w-key: #a882ec; --res: #d9b27c;
+  color-scheme: dark;
+  --on-dark: #ffffff; --on-light: #15181a;
+  --f-display: "Barlow Semi Condensed", "Arial Narrow", sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111613; --surface: #1a211d; --ink: #e4ebe6; --muted: #9aa69e; --line: #2e3a33; --hole: #3d4a42;
+  --accent: #5fc893; --warn-bg: #2f2612; --warn-ink: #f3cf7a;
+  --w-pwr: #ff6656; --w-gnd: #8b929b; --w-v33: #ffa340; --w-btn: #f0cf35; --w-led: #6a9bff; --w-lcd: #46c482; --w-key: #a882ec; --res: #d9b27c;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111613; --surface: #1a211d; --ink: #e4ebe6; --muted: #9aa69e; --line: #2e3a33; --hole: #3d4a42;
+  --accent: #5fc893; --warn-bg: #2f2612; --warn-ink: #f3cf7a;
+  --w-pwr: #ff6656; --w-gnd: #8b929b; --w-v33: #ffa340; --w-btn: #f0cf35; --w-led: #6a9bff; --w-lcd: #46c482; --w-key: #a882ec; --res: #d9b27c;
+  color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body); }
+.wrap { max-width: 900px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 36px; }
+h1, h2 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: .01em; }
+h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.05; }
+h2 { font-size: 26px; line-height: 1.15; }
+p { margin: 0; max-width: 66ch; }
+.eyebrow { font: 600 12px var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.mono { font-family: var(--f-mono); font-weight: 600; }
+section { display: grid; gap: 14px; min-width: 0; }
+header { display: grid; gap: 10px; }
+.warn { background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px; padding: 12px 14px; display: grid; gap: 6px; }
+.warn p { max-width: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 22px; height: 6px; border-radius: 3px; display: inline-block; outline: 1px solid var(--line); }
+.fig { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; overflow-x: auto; }
+.fig svg { display: block; margin: 0 auto; }
+.fig svg text { fill: var(--ink); }
+.cap { font-size: 13.5px; color: var(--muted); }
+.flow { display: grid; gap: 10px; }
+.flow > div { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.pill { border: 2px solid currentColor; border-radius: 999px; padding: 2px 10px; font-size: 13.5px; font-weight: 500; }
+.pill b { color: var(--ink); font-weight: 600; }
+.arrow { color: var(--muted); }
+.progress { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 10px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.bar { flex: 1 1 160px; height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+#count { font: 600 14px var(--f-mono); font-variant-numeric: tabular-nums; }
+button { font: 500 13px var(--f-body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.group { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.group h3 { margin: 0; font: 700 19px var(--f-display); padding: 12px 14px 4px; }
+.group .gnote { padding: 0 14px 10px; color: var(--muted); font-size: 14px; }
+.row { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 14px; border-top: 1px solid var(--line); cursor: pointer; }
+.row input { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
+.row .txt { min-width: 0; }
+.row .ft { font-weight: 500; }
+.row .ft .to { color: var(--muted); padding-inline: 4px; }
+.row .sub { font-size: 13px; color: var(--muted); }
+.row.done .ft { text-decoration: line-through; text-decoration-color: var(--muted); opacity: .6; }
+.chip { font: 600 11.5px var(--f-mono); padding: 3px 7px; border-radius: 4px; white-space: nowrap; }
+.check { padding: 10px 14px 12px; border-top: 1px dashed var(--line); font-size: 14px; display: grid; gap: 2px; }
+.check b { color: var(--accent); }
+.resgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.rcard { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 8px; }
+.rcard h3 { margin: 0; font: 700 24px var(--f-display); }
+.rcard .use { color: var(--muted); font-size: 14px; }
+.rline { display: flex; align-items: center; gap: 10px; font-size: 13.5px; }
+.rline svg { flex: none; }
+ol.tests { margin: 0; padding-left: 22px; display: grid; gap: 8px; max-width: 70ch; }
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Firework controller · panel box</div>
+  <h1>Controller Rewire Sheet</h1>
+  <p>Every wire from the panel parts to the ESP32 terminal board and the breadboard, in the order to connect them. Tick each wire as it goes in. Your ticks are saved on this device only.</p>
+</header>
+
+<div class="warn">
+  <p><b>Before you start:</b> batteries out of the controller, and the fuse out of the field box. Leave the fuse out until every check below passes.</p>
+  <p><b>The two red rails carry different voltages.</b> Left red = 3.3 V, right red = 6 V from the batteries. Never connect them together. Put a bit of tape on the right one marked “6V”.</p>
+  <p><b>Batteries:</b> rechargeable NiMH AAs (4.8 V) are kinder to the LCD than fresh alkalines (up to 6.4 V, just over the LCD's 5 V rating). Alkalines work, the LCD just runs a little over spec.</p>
+</div>
+
+<section>
+  <div class="eyebrow">Wire colours (suggested)</div>
+  <div class="legend" id="legend"></div>
+  <p class="cap">Use any colours you have; sticking to one colour per job makes it easy to fix later. Put a tape flag on each wire end (B3, CH5, KEY L…).</p>
+</section>
+
+<section>
+  <div class="eyebrow">Resistors</div>
+  <h2>Which resistor is which</h2>
+  <p>Only two values in this box. Quick tell: stripes <b>start red-red</b> = 220Ω, <b>start brown-black</b> = 10k.</p>
+  <div class="resgrid" id="resgrid"></div>
+  <p class="cap">Read from the end <b>away from the gold band</b> (on blue 5-band ones, away from the lone band with the bigger gap). Not sure? Multimeter on Ω: about <span class="mono">0.22k</span> = 220Ω, about <span class="mono">10.0k</span> = 10k. Don't hold both legs with your fingers while measuring. Keep the 100k ones (brown-black-yellow) for the field box; on an LED they'd barely glow.</p>
+</section>
+
+<section>
+  <div class="eyebrow">How power flows</div>
+  <h2>Three rails on the breadboard</h2>
+  <div class="flow">
+    <div><span class="pill" style="color:var(--w-pwr)"><b>4×AA pack +</b></span><span class="arrow">→</span><span class="pill" style="color:var(--w-pwr)"><b>POWER toggle</b></span><span class="arrow">→</span><span class="pill" style="color:var(--w-pwr)"><b>right red rail · 6V</b></span><span class="arrow">→</span><span class="pill" style="color:var(--w-pwr)"><b>ESP 5V</b> + <b>LCD VCC</b></span></div>
+    <div><span class="pill" style="color:var(--w-v33)"><b>ESP 3V3</b></span><span class="arrow">→</span><span class="pill" style="color:var(--w-v33)"><b>left red rail · 3.3V</b></span><span class="arrow">→</span><span class="pill" style="color:var(--w-v33)"><b>key switch</b> + <b>four 10k pull-ups</b></span></div>
+    <div><span class="pill" style="color:var(--w-gnd)"><b>pack −, ESP GND, LCD GND, every button and LED</b></span><span class="arrow">→</span><span class="pill" style="color:var(--w-gnd)"><b>both blue rails · GND</b></span></div>
+  </div>
+  <p class="cap">The battery pack's own little switch stays ON; the panel toggle does the switching.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Map 1</div>
+  <h2>ESP32 terminal board</h2>
+  <p>Laid out like your photo: USB on the left. Coloured terminals get a wire; grey ones stay empty. If the order on your board differs, go by the printed label, not the position.</p>
+  <div class="fig"><svg id="esp" width="660" height="232" viewBox="0 0 660 232" role="img" aria-label="ESP32 terminal board pin map"></svg></div>
+  <p class="cap">P36 and P39 may be printed as VP / VN (or SVP / SVN). The 5V terminal may say VIN.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Map 2</div>
+  <h2>Breadboard</h2>
+  <p>Only rows 1–47 are used. Each channel LED sits on one row: ESP wire in column <span class="mono">a</span>, a 220Ω resistor jumping the middle gap from <span class="mono">e</span> to <span class="mono">f</span>, LED wire out of <span class="mono">j</span>. Buttons 5–8 each get a row with a 10k resistor up to the 3.3V rail.</p>
+  <div class="fig"><svg id="bb" width="640" height="700" viewBox="0 0 640 700" role="img" aria-label="Breadboard map, rows 1 to 47"></svg></div>
+  <p class="cap">If the printed rail lines have a break halfway down, the rail is split there: bridge each rail across the break with a short jumper.</p>
+</section>
+
+<section>
+  <div class="progress"><strong>Wire list</strong><div class="bar"><i id="barfill"></i></div><span id="count">0 / 0</span><button id="reset" type="button">Clear ticks</button></div>
+  <div id="list" style="display:grid;gap:14px"></div>
+</section>
+
+<section>
+  <div class="eyebrow">Last step</div>
+  <h2>Live test with the field box</h2>
+  <ol class="tests">
+    <li>Controller and field box both on, field fuse still out. LCD shows <span class="mono">DISARMED</span> and LINK green is lit.</li>
+    <li>Clip a test igniter (or a bulb) onto field channel 1. Channel LED 1 on the panel lights within a second, and the LCD ready count goes up.</li>
+    <li>Turn the field box off. Within about 2 seconds LINK red lights and the LCD says <span class="mono">LINK DOWN</span>.</li>
+    <li>Only after all of that: key to DISARMED, fuse back in.</li>
+  </ol>
+</section>
+</div>
+
+<script>
+const C = { pwr: ["6V / battery +", "red"], gnd: ["GND", "black"], v33: ["3.3V", "orange"], btn: ["buttons", "yellow"],
+            led: ["LEDs", "blue"], lcd: ["LCD I2C", "green"], key: ["key + MODE", "purple"], res: ["resistor", ""] };
+const onDark = new Set(["pwr", "gnd", "led", "lcd", "key"]);
+const col = k => `var(--w-${k})`;
+document.getElementById("legend").innerHTML = Object.entries(C).filter(([k]) => k !== "res")
+  .map(([k, [n, c]]) => `<span><i class="sw" style="background:${col(k)}"></i>${n} <span class="cap">(${c})</span></span>`).join("");
+
+// ---------- resistor colour cards ----------
+const BAND = { black: "#1b1b1b", brown: "#7a4a24", red: "#d0281f", orange: "#ee7d17", yellow: "#f2cf1d", gold: "#b8962e" };
+const RES = [["220 Ω", "Every LED: 8 channel LEDs + 2 LINK LEDs", 10, ["red","red","brown","gold"], ["red","red","black","black","brown"]],
+             ["10 kΩ", "Pull-ups for fire buttons 5–8", 4, ["brown","black","orange","gold"], ["brown","black","black","red","brown"]]];
+const RKEY = { "220Ω": RES[0], "10k": RES[1] };   // wire-list value -> colour card
+function drawRes(bands, blue, w = 150) {
+  const xs = bands.length === 4 ? [44, 56, 68, 104] : [42, 53, 64, 75, 104];
+  return `<svg width="${w}" height="${w / 5}" viewBox="0 0 150 30" aria-hidden="true"><line x1="0" y1="15" x2="150" y2="15" stroke="var(--muted)" stroke-width="2"/>` +
+    `<rect x="30" y="4" width="90" height="22" rx="9" fill="${blue ? "#5b8fd6" : "#dcc395"}"/>` +
+    bands.map((b, i) => `<rect x="${xs[i]}" y="4" width="6.5" height="22" fill="${BAND[b]}"/>`).join("") + `</svg>`;
+}
+document.getElementById("resgrid").innerHTML = RES.map(([v, use, n, b4, b5]) =>
+  `<div class="rcard"><h3>${v} <span class="cap">× ${n}</span></h3><div class="use">${use}</div>` +
+  `<div class="rline">${drawRes(b4, false)}<span><b>4-band</b> (tan)<br>${b4.join(" · ")}</span></div>` +
+  `<div class="rline">${drawRes(b5, true)}<span><b>5-band</b> (blue)<br>${b5.join(" · ")}</span></div></div>`).join("");
+
+// ---------- ESP32 terminal map ----------
+const TOP = ["5V","CMD","SD3","SD2","P13","GND","P12","P14","P27","P26","P25","P33","P32","P35","P34","VN","VP","EN","3V3"];
+const BOT = ["CLK","SD0","SD1","P15","P2","P0","P4","P16","P17","P5","P18","P19","GND","P21","RX","TX","P22","P23","GND"];
+const TT = { "5V":["6V","pwr"], "GND":["GND","gnd"], P13:["B1","btn"], P12:["LK R","led"], P14:["B2","btn"], P27:["KEY R","key"],
+  P26:["B4","btn"], P25:["B3","btn"], P33:["CH8","led"], P32:["CH7","led"], P35:["B6","btn"], P34:["B5","btn"],
+  VN:["B8","btn"], VP:["B7","btn"], "3V3":["3V3","v33"] };
+const BT = { P15:["MODE","key"], P2:["LK G","led"], P4:["CH1","led"], P16:["SDA","lcd"], P17:["KEY L","key"], P5:["SCL","lcd"],
+  P18:["CH6","led"], P19:["CH2","led"], P21:["CH3","led"], P22:["CH4","led"], P23:["CH5","led"] };
+(function () {
+  const W = 32, X0 = 26; let s = "";
+  s += `<rect x="16" y="58" width="628" height="122" rx="8" fill="var(--surface)" stroke="var(--line)" stroke-width="2"/>`;
+  s += `<rect x="200" y="96" width="300" height="46" rx="4" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  s += `<text x="350" y="124" text-anchor="middle" font-family="var(--f-display)" font-size="17" font-weight="700">ESP32 dev board</text>`;
+  s += `<rect x="4" y="104" width="34" height="30" rx="3" fill="var(--hole)"/><text x="21" y="123" text-anchor="middle" font-size="10" font-family="var(--f-mono)">USB</text>`;
+  [[TOP, TT, 64, 40], [BOT, BT, 150, 216]].forEach(([row, tags, y, ty], ri) => {
+    let gndUsed = false;
+    row.forEach((lab, i) => {
+      const x = X0 + i * W; let t = tags[lab];
+      if (lab === "GND" && ri === 1) t = null;            // bottom-row GNDs: spare
+      if (lab === "GND" && ri === 0) { if (gndUsed) t = null; gndUsed = true; }
+      s += `<rect x="${x}" y="${y}" width="${W - 4}" height="24" rx="3" fill="${t ? col(t[1]) : "var(--surface)"}" stroke="${t ? col(t[1]) : "var(--hole)"}" stroke-width="1.5"/>`;
+      s += `<text x="${x + (W - 4) / 2}" y="${y + 16}" text-anchor="middle" font-family="var(--f-mono)" font-size="9.5" font-weight="600" style="fill:${t ? (onDark.has(t[1]) ? "var(--on-dark)" : "var(--on-light)") : "var(--muted)"}">${lab}</text>`;
+      if (t) s += `<text x="${x + (W - 4) / 2}" y="${ty}" text-anchor="middle" font-family="var(--f-mono)" font-size="10" font-weight="600">${t[0]}</text>`;
+    });
+  });
+  s += `<text x="644" y="20" text-anchor="end" font-size="11" style="fill:var(--muted)">labels above / below = where the wire goes</text>`;
+  document.getElementById("esp").innerHTML = s;
+})();
+
+// ---------- breadboard map ----------
+const LEDS = [[1,"P4",3],[2,"P19",6],[3,"P21",9],[4,"P22",12],[5,"P23",15],[6,"P18",18],[7,"P32",21],[8,"P33",24]];
+const LINK = [["LINK G","P2",27,"green LED"],["LINK R","P12",30,"red LED"]];
+const PULL = [[5,"P34",36],[6,"P35",39],[7,"P36 (VP)",42],[8,"P39 (VN)",45]];
+(function () {
+  const X = { Ln: 22, Lp: 38, a: 64, b: 78, c: 92, d: 106, e: 120, f: 148, g: 162, h: 176, i: 190, j: 204, Rp: 230, Rn: 246 };
+  const y = r => 44 + (r - 1) * 13, R = 47; let s = "";
+  s += `<rect x="10" y="30" width="248" height="${y(R) - 30 + 12}" rx="6" fill="var(--surface)" stroke="var(--line)" stroke-width="2"/>`;
+  s += `<rect x="131" y="30" width="6" height="${y(R) - 30 + 12}" fill="var(--line)"/>`;
+  [["Ln","gnd"],["Lp","v33"],["Rp","pwr"],["Rn","gnd"]].forEach(([k, c]) =>
+    s += `<line x1="${X[k]}" y1="36" x2="${X[k]}" y2="${y(R) + 6}" stroke="${col(c)}" stroke-width="1.5" opacity=".55"/>`);
+  [["Ln","GND","gnd"],["Lp","3V3","v33"],["Rp","6V","pwr"],["Rn","GND","gnd"]].forEach(([k, t, c]) =>
+    s += `<text x="${X[k]}" y="22" text-anchor="middle" font-family="var(--f-mono)" font-size="9.5" font-weight="600" style="fill:${col(c)}">${t}</text>`);
+  "abcdefghij".split("").forEach(c => s += `<text x="${X[c]}" y="22" text-anchor="middle" font-family="var(--f-mono)" font-size="10">${c}</text>`);
+  for (let r = 1; r <= R; r++) {
+    Object.values(X).forEach(x => s += `<circle cx="${x}" cy="${y(r)}" r="2.1" fill="var(--hole)"/>`);
+    if (r % 5 === 0 || r === 1) s += `<text x="51" y="${y(r) + 3}" text-anchor="middle" font-family="var(--f-mono)" font-size="8" style="fill:var(--muted)">${r}</text>`;
+  }
+  const dot = (x, r, c) => `<circle cx="${x}" cy="${y(r)}" r="4.6" fill="${col(c)}" stroke="var(--surface)" stroke-width="1.2"/>`;
+  const res = (x1, x2, r, lab) => `<line x1="${x1}" y1="${y(r)}" x2="${x2}" y2="${y(r)}" stroke="var(--muted)" stroke-width="1.4"/>` +
+    `<rect x="${(x1 + x2) / 2 - 8}" y="${y(r) - 3.5}" width="16" height="7" rx="3" fill="var(--res)"/>`;
+  const label = (r, txt, c) => `<rect x="272" y="${y(r) - 5}" width="4" height="10" fill="${col(c)}"/>` +
+    `<text x="282" y="${y(r) + 4}" font-family="var(--f-mono)" font-size="10.5" font-weight="500">${txt}</text>`;
+  LEDS.forEach(([n, p, r]) => {
+    s += res(X.e, X.f, r) + dot(X.a, r, "led") + dot(X.j, r, "led");
+    s += label(r, `${r}  CH${n}: ${p}→a${r}  220Ω e${r}–f${r}  j${r}→LED${n} +`, "led");
+  });
+  LINK.forEach(([n, p, r, what]) => {
+    s += res(X.e, X.f, r) + dot(X.a, r, "led") + dot(X.j, r, "led");
+    s += label(r, `${r}  ${n}: ${p}→a${r}  220Ω e${r}–f${r}  j${r}→${what} +`, "led");
+  });
+  PULL.forEach(([n, p, r]) => {
+    s += res(X.Lp, X.a, r) + dot(X.c, r, "btn") + dot(X.d, r, "btn");
+    s += label(r, `${r}  B${n}: ${p}→c${r}  10k a${r}–3V3  d${r}→button ${n}`, "btn");
+  });
+  s += dot(X.Lp, 1, "v33") + dot(X.Ln, 1, "gnd") + dot(X.Rp, 1, "pwr") + dot(X.Rp, 2, "pwr") + dot(X.Rn, 1, "gnd");
+  s += label(1, "rails: ESP 3V3 · ESP GND · switch→6V · 6V→ESP 5V · pack −", "pwr");
+  s += `<path d="M${X.Ln},${y(R)} C${X.Ln},${y(R) + 34} ${X.Rn},${y(R) + 34} ${X.Rn},${y(R)}" fill="none" stroke="${col("gnd")}" stroke-width="2.6"/>` + dot(X.Ln, R, "gnd") + dot(X.Rn, R, "gnd");
+  s += label(R, "47  GND bridge: left blue rail → right blue rail", "gnd");
+  s += `<text x="282" y="${y(33) + 4}" font-size="11" style="fill:var(--muted)">LED − legs, button GND legs, LCD GND:</text>`;
+  s += `<text x="282" y="${y(34) + 4}" font-size="11" style="fill:var(--muted)">any free hole on either blue rail</text>`;
+  document.getElementById("bb").innerHTML = s;
+})();
+
+// ---------- wire list ----------
+const G = [];
+G.push({ t: "1 · Power and rails", n: "Do these first. Batteries stay out until the check.", items: [
+  ["p1", "Battery pack red (+)", "POWER toggle, either lug", "pwr"],
+  ["p2", "POWER toggle, other lug", "right red rail (6V)", "pwr", "A third lug, if your toggle has one, stays empty."],
+  ["p3", "right red rail (6V)", "ESP terminal 5V (or VIN)", "pwr"],
+  ["p4", "Battery pack black (−)", "right blue rail", "gnd"],
+  ["p5", "ESP terminal GND (top row)", "left blue rail", "gnd"],
+  ["p6", "ESP terminal 3V3", "left red rail (3V3)", "v33"],
+  ["p7", "left blue rail, row 47", "right blue rail, row 47", "gnd", "The GND bridge. Never bridge the red rails."]],
+  c: "Batteries in, flip POWER on: the small red LED on the ESP32 board lights. Flip off again before the next group." });
+G.push({ t: "2 · LCD screen", n: "The four pins on the LCD's back board.", items: [
+  ["l1", "LCD GND", "right blue rail", "gnd"], ["l2", "LCD VCC", "right red rail (6V)", "pwr"],
+  ["l3", "LCD SDA", "ESP P16", "lcd"], ["l4", "LCD SCL", "ESP P5", "lcd"]],
+  c: "Power on: the backlight lights and it shows <span class=mono>Firework Ctrl / starting…</span>, then <span class=mono>LINK DOWN</span>. Backlight on but no text: turn the small screw on the LCD's back board. Still nothing: swap SDA and SCL." });
+G.push({ t: "3 · Key switch", n: "Two contact blocks on the back of the key. Each block has 2 screws.", items: [
+  ["k1", "Left block, screw 1", "left red rail (3V3)", "v33"],
+  ["k2", "Right block, screw 1", "left red rail (3V3)", "v33", "Or a short jumper from the left block's screw 1."],
+  ["k3", "Left block, screw 2", "ESP P17 (ARMED)", "key"],
+  ["k4", "Right block, screw 2", "ESP P27 (ARMED ALL)", "key"]],
+  c: "Turn the field box on (fuse out) so the link is up. LCD shows <span class=mono>DISARMED</span>. Key left: <span class=mono>ARMED SINGLE</span>. Key right: <span class=mono>ARMED ALL</span>. Backwards? Swap the wires on P17 and P27 (left/right flips when you look from behind)." });
+G.push({ t: "4 · MODE button", n: "Either leg can go either way.", items: [
+  ["m1", "MODE button, leg 1", "ESP P15", "key"], ["m2", "MODE button, leg 2", "blue rail", "gnd"]],
+  c: "Key at ARMED: a short press of MODE flips the LCD between <span class=mono>SINGLE</span> and <span class=mono>PROGRAM</span>." });
+const b14 = [[1,"P13"],[2,"P14"],[3,"P25"],[4,"P26"]];
+G.push({ t: "5 · Fire buttons 1–4", n: "These go straight to the ESP, no breadboard. Button legs can go either way.", items:
+  b14.flatMap(([n, p]) => [[`b${n}`, `Button ${n}, leg 1`, `ESP ${p}`, "btn"], [`b${n}g`, `Button ${n}, leg 2`, "blue rail", "gnd"]]),
+  c: "Key at DISARMED: press each button; the LCD shows <span class=mono>** DENIED ** key is DISARMED</span>. No message means check that button's two wires." });
+G.push({ t: "6 · Fire buttons 5–8", n: "These ESP pins have no built-in pull-up, so each one goes through a breadboard row with a 10k resistor.", items:
+  PULL.flatMap(([n, p, r]) => [
+    [`r${n}`, `10k resistor: hole a${r}`, "left red rail (3V3)", "res", "10k"],
+    [`q${n}`, `ESP ${p}`, `breadboard c${r}`, "btn"],
+    [`d${n}`, `breadboard d${r}`, `Button ${n}, leg 1`, "btn"],
+    [`d${n}g`, `Button ${n}, leg 2`, "blue rail", "gnd"]]),
+  c: "Same test as buttons 1–4: each press shows <span class=mono>DENIED</span>. A button that shows DENIED on its own without being pressed is missing its 10k resistor." });
+G.push({ t: "7 · Channel LEDs 1–8", n: "LED long leg = + (from the breadboard), short leg = − (to GND). Backwards, it never lights.", items:
+  LEDS.flatMap(([n, p, r]) => [
+    [`e${n}`, `ESP ${p}`, `breadboard a${r}`, "led"],
+    [`s${n}`, `220Ω resistor: hole e${r}`, `hole f${r}`, "res", "220Ω"],
+    [`j${n}`, `breadboard j${r}`, `LED ${n} long leg (+)`, "led"],
+    [`n${n}`, `LED ${n} short leg (−)`, "right blue rail", "gnd"]]),
+  c: "Power off and on: every LED flashes once for half a second at start-up. One that stays dark: check its 3 wires and resistor, then try turning the LED around." });
+G.push({ t: "8 · LINK LEDs", n: "Green and red, wired the same way as the channel LEDs.", items:
+  LINK.flatMap(([n, p, r, what], k) => [
+    [`le${k}`, `ESP ${p}`, `breadboard a${r}`, "led"],
+    [`ls${k}`, `220Ω resistor: hole e${r}`, `hole f${r}`, "res", "220Ω"],
+    [`lj${k}`, `breadboard j${r}`, `${what} long leg (+)`, "led"],
+    [`ln${k}`, `${what} short leg (−)`, "right blue rail", "gnd"]]),
+  c: "Both flash at start-up. Field box on: green stays lit. Field box off: red lights within about 2 seconds." });
+
+let done = new Set();
+try { done = new Set(JSON.parse(localStorage.getItem("rewire-done") || "[]")); } catch (e) {}
+const save = () => { try { localStorage.setItem("rewire-done", JSON.stringify([...done])); } catch (e) {} };
+const total = G.reduce((a, g) => a + g.items.length, 0);
+function progress() {
+  const n = G.reduce((a, g) => a + g.items.filter(i => done.has(i[0])).length, 0);
+  document.getElementById("count").textContent = `${n} / ${total}`;
+  document.getElementById("barfill").style.width = `${(100 * n / total).toFixed(1)}%`;
+}
+const list = document.getElementById("list");
+G.forEach(g => {
+  const box = document.createElement("div"); box.className = "group";
+  box.innerHTML = `<h3>${g.t}</h3><div class="gnote">${g.n}</div>`;
+  g.items.forEach(([id, from, to, c, extra]) => {
+    const isRes = c === "res", R = isRes && RKEY[extra];
+    const row = document.createElement("label"); row.className = "row" + (done.has(id) ? " done" : "");
+    const chip = isRes ? `<span style="display:inline-flex;align-items:center;gap:6px">${drawRes(R[3], false, 60)}<span class="chip" style="background:var(--res);color:var(--on-light)">${extra}</span></span>`
+      : `<span class="chip" style="background:${col(c)};color:${onDark.has(c) ? "var(--on-dark)" : "var(--on-light)"}">${C[c][1]}</span>`;
+    const sub = isRes ? `${R[3].join(" · ")} (tan) &nbsp;or&nbsp; ${R[4].join(" · ")} (blue)` : extra;
+    row.innerHTML = `<input type="checkbox" id="w-${id}" ${done.has(id) ? "checked" : ""}>` +
+      `<div class="txt"><div class="ft">${from}<span class="to">→</span>${to}</div>${sub ? `<div class="sub">${sub}</div>` : ""}</div>${chip}`;
+    row.querySelector("input").addEventListener("change", e => {
+      e.target.checked ? done.add(id) : done.delete(id);
+      row.classList.toggle("done", e.target.checked); save(); progress();
+    });
+    box.appendChild(row);
+  });
+  const chk = document.createElement("div"); chk.className = "check"; chk.innerHTML = `<b>Check</b><span>${g.c}</span>`;
+  box.appendChild(chk); list.appendChild(box);
+});
+progress();
+const reset = document.getElementById("reset"); let armed = false;
+reset.addEventListener("click", () => {
+  if (!armed) { armed = true; reset.textContent = "Tap again to clear"; setTimeout(() => { armed = false; reset.textContent = "Clear ticks"; }, 3000); return; }
+  done.clear(); save(); document.querySelectorAll(".row").forEach(r => { r.classList.remove("done"); r.querySelector("input").checked = false; });
+  armed = false; reset.textContent = "Clear ticks"; progress();
+});
+</script>
