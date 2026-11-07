@@ -68,6 +68,30 @@ Each channel can be set in the menu (saved in flash):
 - **ON/OFF**: press on, press off. For lights or inflatables.
 - **HOLD**: relay on only while you hold the button. For fog or similar.
 
+Picking ON/OFF or HOLD also sets that channel's "needs continuity" to NO, so it works
+without anything on its sense wire. You can change that back in Channel setup.
+
+### Two ways to use a channel
+
+**12 V pyro (the default).** Channel type FIRE. The relay switches the fused 12 V
+firing bus to an igniter on alligator clips. This is what the wiring diagrams and
+[`docs/FIELD_WIRING_GUIDE.html`](docs/FIELD_WIRING_GUIDE.html) show. E-matches are
+about 1-2 Ω. Steel-wool bench igniters need a 1-2 s pulse.
+
+**120 V wall power (optional).** Channel type ON/OFF or HOLD. One relay switches the
+hot wire of an ordinary extension cord, so you can turn on inflatables, lights, a fog
+machine or anything else that plugs into a wall. This needs its own wiring and a list
+of must-do safety steps: see [120 V wall-power channel](#120-v-wall-power-channel-optional)
+before you try it. How the firmware treats that channel:
+
+- **ARMED ALL never turns it on.** Fire-all only launches FIRE channels.
+- **Turning the key to DISARMED switches it off**, along with every other ON/OFF and
+  HOLD channel.
+- **If the radio drops**, the menu's **Link-lost hold** setting decides how long the
+  device stays on (default: off at once). HOLD channels always go off at once.
+- **It shows "no continuity".** That's expected, because its sense wire is left
+  disconnected on purpose.
+
 ### Menu (key in DISARMED, press MODE)
 
 btn1 = next, btn2 = back, btn3 = minus, btn4 = plus/start, MODE = back, hold MODE = exit.
@@ -127,6 +151,29 @@ What one complete set uses. The search terms are what to type into Amazon/AliExp
 | 16 | Alligator clips + wire | Two per channel |
 | 1 | USB power source + cable | Powers the field ESP32 (a small power bank works) |
 | 1 | Ammo can | About 11 in inside length; the printed floor and front window frame fit it |
+
+**Wire size at the relay board:** the ELEGOO screw terminals take about 16-18 AWG at
+most. 14 AWG doesn't fit. If your leads are thicker, use a short 16/18 AWG pigtail or
+a ferrule into the terminal.
+
+### Optional: parts for a 120 V wall-power channel
+
+Only if you want one channel to switch a wall device. US 120 V only. Prices are rough
+(Nov 2026).
+
+| Qty | Part | Search for / notes | ~$ |
+|---|---|---|---|
+| 1 | Female cord-end plug, 15 A 125 V, 3-prong | "Leviton 515CV" (515CV-OR is orange). Listed for SJ 16/3 cord | 6 |
+| 1 kit | 5x20 mm inline fuse holders (18 AWG, 250 V) + assorted 250 V glass fuses | "5x20mm fuse holder inline screw type with wire combo kit". The XFFCSEC kit has 5 holders and 150 fuses, including 5 A, 6.3 A and 7 A | 10 |
+| 1-2 | Old PC power cord (18 AWG, 3-wire), computer end cut off | Reuse one. Or cut a 3 ft 16/3 extension cord in half: that gives you the male and the female end, and you can skip the Leviton | 0-8 |
+| 2 | Wago 221 lever nuts | Already in the field box list | - |
+| opt | Plug-in GFCI adapter | "plug in GFCI adapter". Skip it if the outlet you use is already GFCI | 12-15 |
+| opt | 18 AWG ferrules + crimper | "18 AWG ferrules crimper kit" | - |
+
+A PC cord is usually 18/3, thinner than the 16/3 the Leviton is made for. Tighten its
+cord clamp hard and give it a tug. The fuse holder leads go straight into the ELEGOO
+screw terminal: twist the strands or crimp a ferrule on. **Don't tin them with
+solder**, which loosens under a screw over time.
 
 ### Optional
 
@@ -219,6 +266,71 @@ The pin numbers in these diagrams match the sketches. The step-by-step sheets in
   <img src="docs/images/panel-box-inside.jpg" width="32%" alt="Inside the panel case: ESP32 on its terminal board and the breadboard">
   <img src="docs/images/panel-leds.jpg" width="32%" alt="Breadboard with the channel and link LEDs and their resistors">
 </p>
+
+### 120 V wall-power channel (optional)
+
+> [!CAUTION]
+> **Wall power can kill you, and a mistake here can put 120 V on the igniter clips or
+> the ESP32.** Only do this if you're comfortable wiring mains, and go through every
+> step in the checklist below. US 120 V only: 230 V countries need different plugs,
+> wire colours and fuse values. If you're unsure, use a ready-made relay outlet box
+> that takes a low-voltage control input instead.
+
+**How it works:** the relay switches only the **hot** wire of an ordinary cord. Neutral
+and ground go straight through on Wagos and never touch the relay board. The example
+uses channel 8.
+
+| From | Through | To |
+|---|---|---|
+| Wall plug **HOT** (narrow blade, usually black) | Inline fuse holder, 250 V, 5 A slow-blow | Relay **COM8** |
+| Relay **NO8** | | Female plug **HOT** (brass screw) |
+| Wall plug **NEUTRAL** (wide blade, usually white) | Wago | Female plug **NEUTRAL** (silver screw) |
+| Wall plug **GROUND** (green) | Wago | Female plug **GROUND** (green screw) |
+| Channel 8 continuity-sense wire | | **Nothing.** Leave that sense terminal empty |
+
+Before you cut anything, check with a continuity meter which wire goes to the narrow
+blade. Don't trust the colours alone.
+
+In the menu, set channel 8 to **ON/OFF** (or HOLD) under **Channel setup**. Then, with
+the key in ARMED, button 8 turns the outlet on and off.
+
+**Must-do checklist** (every one of these, every build):
+
+1. **Remove CH8's COM jumper.** All the other COMs are tied to the 12 V firing bus. If
+   CH8's COM stays jumpered, 120 V lands on every channel's igniter clips.
+2. **Disconnect CH8's sense wire** (on a breadboard, take out its 10 kΩ series
+   resistor). Through that resistor 120 V would reach the ESP32 pin, kill the board and
+   make the whole low-voltage side live. The 10 kΩ only protects against 12 V.
+3. **Unplugging the 12 V battery doesn't make shared wiring safe.** Steps 1 and 2 are
+   needed even if 12 V and 120 V are never connected at the same time.
+4. **Switch the hot only**, never the neutral.
+5. **The fuse must be rated 250 V.** Don't reuse the 12 V system's automotive blade
+   fuse: blade fuses are rated 32 V and can keep arcing on wall power instead of
+   breaking the circuit.
+6. **Fuse size:** start at 5 A. If a fast-blow pops when a blower motor starts, step up
+   to 6.3 A, then 7 A. Never go above 8 A on 18 AWG cord. A fuse that blows while the
+   device is already running means a real fault: unplug it and find the problem.
+7. **Load limit about 5 A / 600 W.** Fine for inflatables, lights and fog machines. No
+   heaters or big motors.
+8. **Strain relief:** two zip ties pulled tight around each cord just inside the box.
+   Smooth the entry hole, or wrap the cord in tape where it passes through. Tug on the
+   cord: the screw terminals must not feel the pull.
+9. **Keep mains wires on one side of the box**, zip-tied, away from the ESP32 and the
+   12 V wiring. The ELEGOO board has bare solder joints on the back, so mount it on
+   standoffs with tape or plastic under the mains channels. If any part of the box is
+   metal, bond it to the green ground wire.
+10. **Label the channel "120V"** on the box so nobody clips an igniter to it.
+11. **Use a GFCI outlet** (the kind with TEST/RESET buttons) or a plug-in GFCI adapter,
+    especially with people around.
+12. **Always unplug the wall cord before you open the box.** Keep the lid shut while
+    it's in use.
+13. **First power-up check, with the wall cord still unplugged**, using a meter:
+    - wall plug HOT to female plug HOT reads open;
+    - turn channel 8 on from the panel: now it beeps;
+    - wall plug HOT to the 12 V bus, and to GND, reads open with the relay off and on.
+
+Don't bypass the 10 A firing fuse, the shared ground, the 10 kΩ series resistors or
+the arming key on the 12 V channels to make room for this. They stay exactly as they are.
 
 ## Pin maps
 
@@ -330,7 +442,7 @@ To rebuild the faceplate, run `lcd_pod_step.py` first, then `plate_test.py`.
 Open these in a browser:
 
 - [`docs/CONTROLLER_WIRING.html`](docs/CONTROLLER_WIRING.html): panel box wiring, step by step
-- [`docs/FIELD_WIRING_GUIDE.html`](docs/FIELD_WIRING_GUIDE.html): field box power and clip wiring
+- [`docs/FIELD_WIRING_GUIDE.html`](docs/FIELD_WIRING_GUIDE.html): field box power and clip wiring, plus the optional 120 V wall-power channel
 - [`docs/SCHEMATIC_field.html`](docs/SCHEMATIC_field.html): field box schematic
 
 ## Before every use
@@ -341,6 +453,14 @@ Open these in a browser:
 - Turn the key to DISARMED and **pull the fuse** before you walk up to the field box.
   Connect igniters last, fuse in last, and walk away before you arm.
 - If something doesn't fire, disarm, pull the fuse, and wait before you approach.
+
+If you have a 120 V wall-power channel:
+
+- Its channel is still set to **ON/OFF** or **HOLD** (not FIRE), and it's labelled "120V".
+- Its **COM is not jumpered** to the 12 V bus and its **sense wire is disconnected**.
+- The wall cord is **unplugged** whenever the box is open. Lid shut, then plug in.
+- It's plugged into a **GFCI** outlet or adapter, and the cord's strain relief holds
+  when you tug it.
 
 ## License
 

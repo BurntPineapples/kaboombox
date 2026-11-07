@@ -163,6 +163,49 @@
 <b>Fuse safety:</b> the fuse is the master kill. Leave it <b>out</b> of the holder while wiring and clipping strands. With no fuse, the whole 12V positive chain is dead. Insert it only when everyone is clear and you're ready to fire, then pull it right back out.
 </div>
 
+<p class="sub"><b>Wire size:</b> the ELEGOO relay screw terminals take about 16-18 AWG at most. 14 AWG doesn't fit. Use a short 16/18 AWG pigtail or a ferrule into the terminal.</p>
+
+<h2>4. Optional: a 120V wall-power channel</h2>
+<p class="sub">One channel can switch a wall outlet instead of an igniter: inflatables, lights, a fog machine, anything that plugs into the wall. In the panel menu set that channel to <b>ON/OFF</b> (or HOLD) under <b>Channel setup</b>. ARMED ALL never turns it on, DISARMED turns it off, and the <b>Link-lost hold</b> setting decides how long it stays on if the radio drops. It will show "no continuity"; that's expected.</p>
+
+<div class="note">
+<b>Wall power can kill you.</b> A mistake here can put 120V on the igniter clips or the ESP32. Only do this if you're comfortable wiring mains, and do every step in the checklist below. US 120V only: 230V countries need different plugs, wire colours and fuse values.
+</div>
+
+<p class="sub"><b>How it works:</b> the relay switches only the <b>hot</b> wire of an ordinary cord. Neutral and ground go straight through on Wagos and never touch the relay board. This example uses channel 8.</p>
+<table>
+<tr><th>From</th><th>Through</th><th>To</th></tr>
+<tr><td>Wall plug <b>HOT</b> (narrow blade, usually black)</td><td>Inline fuse holder, 250V, 5A slow-blow</td><td>Relay <b>COM8</b></td></tr>
+<tr><td>Relay <b>NO8</b></td><td></td><td>Female plug <b>HOT</b> (brass screw)</td></tr>
+<tr><td>Wall plug <b>NEUTRAL</b> (wide blade, usually white)</td><td>Wago</td><td>Female plug <b>NEUTRAL</b> (silver screw)</td></tr>
+<tr><td>Wall plug <b>GROUND</b> (green)</td><td>Wago</td><td>Female plug <b>GROUND</b> (green screw)</td></tr>
+<tr><td>Channel 8 continuity-sense wire</td><td></td><td><b>Nothing.</b> Leave that sense terminal empty</td></tr>
+</table>
+<p class="sub">Before you cut anything, check with a continuity meter which wire goes to the narrow blade. Don't trust the colours alone.</p>
+
+<h3>Must-do checklist</h3>
+<ol>
+<li><b>Remove CH8's COM jumper.</b> All the other COMs are tied to the 12V firing bus. If CH8's COM stays jumpered, 120V lands on every channel's igniter clips.</li>
+<li><b>Disconnect CH8's sense wire</b> (on a breadboard, take out its 10k series resistor). Through that resistor 120V would reach the ESP32 pin, kill the board and make the whole low-voltage side live. The 10k only protects against 12V.</li>
+<li><b>Unplugging the 12V battery doesn't make shared wiring safe.</b> Steps 1 and 2 are needed even if 12V and 120V are never connected at the same time.</li>
+<li><b>Switch the hot only</b>, never the neutral.</li>
+<li><b>The fuse must be rated 250V.</b> Don't reuse the 12V system's automotive blade fuse: blade fuses are rated 32V and can keep arcing on wall power instead of breaking the circuit.</li>
+<li><b>Fuse size:</b> start at 5A. If a fast-blow pops when a blower motor starts, step up to 6.3A, then 7A. Never above 8A on 18 AWG cord. A fuse that blows while the device is already running means a real fault: unplug it and find the problem.</li>
+<li><b>Load limit about 5A / 600W.</b> Fine for inflatables, lights and fog machines. No heaters or big motors.</li>
+<li><b>Strain relief:</b> two zip ties pulled tight around each cord just inside the box. Smooth the entry hole, or wrap the cord in tape where it passes through. Tug on the cord: the screw terminals must not feel the pull.</li>
+<li><b>Keep mains wires on one side of the box</b>, zip-tied, away from the ESP32 and the 12V wiring. The ELEGOO board has bare solder joints on the back, so mount it on standoffs with tape or plastic under the mains channels. If any part of the box is metal, bond it to the green ground wire.</li>
+<li><b>Label the channel "120V"</b> on the box so nobody clips an igniter to it.</li>
+<li><b>Use a GFCI outlet</b> (the kind with TEST/RESET buttons) or a plug-in GFCI adapter, especially with people around.</li>
+<li><b>Always unplug the wall cord before you open the box.</b> Keep the lid shut while it's in use.</li>
+<li><b>First power-up check, with the wall cord still unplugged</b>, using a meter: wall plug HOT to female plug HOT reads open; turn channel 8 on from the panel and it beeps; wall plug HOT to the 12V bus, and to GND, reads open with the relay off and on.</li>
+</ol>
+
+<p class="sub"><b>Parts</b> (see the README parts list for search terms): a Leviton 515CV female cord-end plug, a 5x20 mm inline fuse holder kit with 250V glass fuses, an old 3-wire PC power cord (or a 16/3 extension cord cut in half, which gives both ends), two Wagos, and ideally a plug-in GFCI adapter. Twist the fuse holder's strands or crimp a ferrule before they go into the relay terminal; don't tin them with solder.</p>
+
+<div class="note">
+<b>Leave the 12V side alone.</b> Don't bypass the 10A firing fuse, the shared ground, the 10k series resistors or the arming key to make room for this channel.
+</div>
+
 </div>
 </body>
 </html>

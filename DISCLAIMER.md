@@ -58,6 +58,18 @@ The radio can also be jammed, or simply fail, at any time. The signing has not b
 independently reviewed. Do not rely on the wireless link for safety. The physical arming key and the removable firing fuse are the
 safety devices; the software only adds convenience checks on top of them.
 
+## 3a. Wall power (mains voltage)
+
+The documentation describes an optional way to switch a 120 V wall outlet with one relay
+channel. Mains voltage can cause **electrocution, death, fire and property damage**. A
+wiring mistake can put mains voltage on the igniter clips, the low-voltage electronics or
+the enclosure. The relay module used here was not designed or certified for mains use in
+an enclosure like this, and the instructions have not been reviewed by an electrician.
+Only wire mains if you are qualified to do so and it is allowed where you live. Use a GFCI
+(RCD) outlet, keep the box closed and unplugged while working on it, and follow every
+step of the checklist in the README. The instructions are for US 120 V only. If in doubt,
+have a licensed electrician do it, or use a certified relay-controlled outlet instead.
+
 ## 4. Safety features must never be bypassed
 
 The design includes:
