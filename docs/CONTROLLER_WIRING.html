@@ -259,7 +259,7 @@ G.push({ t: "1 · Power and rails", n: "Do these first. Batteries stay out until
 G.push({ t: "2 · LCD screen", n: "The four pins on the LCD's back board.", items: [
   ["l1", "LCD GND", "right blue rail", "gnd"], ["l2", "LCD VCC", "right red rail (6V)", "pwr"],
   ["l3", "LCD SDA", "ESP P16", "lcd"], ["l4", "LCD SCL", "ESP P5", "lcd"]],
-  c: "Power on: the backlight lights and it shows <span class=mono>Firework Ctrl / starting…</span>, then <span class=mono>LINK DOWN</span>. Backlight on but no text: turn the small screw on the LCD's back board. Still nothing: swap SDA and SCL." });
+  c: "Power on: the backlight lights and it shows <span class=mono>Show Ctrl v3.0 / starting…</span>, then <span class=mono>LINK DOWN</span>. Backlight on but no text: turn the small screw on the LCD's back board. Still nothing: swap SDA and SCL." });
 G.push({ t: "3 · Key switch", n: "Two contact blocks on the back of the key. Each block has 2 screws.", items: [
   ["k1", "Left block, screw 1", "left red rail (3V3)", "v33"],
   ["k2", "Right block, screw 1", "left red rail (3V3)", "v33", "Or a short jumper from the left block's screw 1."],
@@ -272,14 +272,14 @@ G.push({ t: "4 · MODE button", n: "Either leg can go either way.", items: [
 const b14 = [[1,"P13"],[2,"P14"],[3,"P25"],[4,"P26"]];
 G.push({ t: "5 · Fire buttons 1–4", n: "These go straight to the ESP, no breadboard. Button legs can go either way.", items:
   b14.flatMap(([n, p]) => [[`b${n}`, `Button ${n}, leg 1`, `ESP ${p}`, "btn"], [`b${n}g`, `Button ${n}, leg 2`, "blue rail", "gnd"]]),
-  c: "Key at DISARMED: press each button; the LCD shows <span class=mono>** DENIED ** key is DISARMED</span>. No message means check that button's two wires." });
+  c: "Key at DISARMED: press each button; the LCD shows <span class=mono>DISARMED / press MODE=menu</span>. No message means check that button's two wires." });
 G.push({ t: "6 · Fire buttons 5–8", n: "These ESP pins have no built-in pull-up, so each one goes through a breadboard row with a 10k resistor.", items:
   PULL.flatMap(([n, p, r]) => [
     [`r${n}`, `10k resistor: hole a${r}`, "left red rail (3V3)", "res", "10k"],
     [`q${n}`, `ESP ${p}`, `breadboard c${r}`, "btn"],
     [`d${n}`, `breadboard d${r}`, `Button ${n}, leg 1`, "btn"],
     [`d${n}g`, `Button ${n}, leg 2`, "blue rail", "gnd"]]),
-  c: "Same test as buttons 1–4: each press shows <span class=mono>DENIED</span>. A button that shows DENIED on its own without being pressed is missing its 10k resistor." });
+  c: "Same test as buttons 1–4: each press shows the <span class=mono>DISARMED</span> message. A button that shows it on its own without being pressed is missing its 10k resistor." });
 G.push({ t: "7 · Channel LEDs 1–8", n: "LED long leg = + (from the breadboard), short leg = − (to GND). Backwards, it never lights.", items:
   LEDS.flatMap(([n, p, r]) => [
     [`e${n}`, `ESP ${p}`, `breadboard a${r}`, "led"],
