@@ -6,6 +6,10 @@ firework and effects shows. A handheld panel with
 relay board and a 12 V battery. The field box checks each igniter for continuity and
 reports back, so you can see on the panel which channels are ready before you arm.
 
+Channels can also switch things on and off instead of firing them. One channel can
+even switch a 120 V wall outlet for inflatables, lights or a fog machine:
+[see the 120 V wall-power channel](#120-v-wall-power-channel-optional).
+
 > [!CAUTION]
 > **This fires pyrotechnics. It can hurt or kill people.** It's a hobby project, not a
 > certified product, and it comes with no warranty of any kind. Read
